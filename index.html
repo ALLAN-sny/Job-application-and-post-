@@ -4,64 +4,80 @@
 <title>Bionex Careers</title>
 <style>
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
   background: #eef2f7;
   color: #222;
-  text-align:center;
-  margin:0;
-  padding:0;
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 header {
   background: linear-gradient(90deg,#1a237e,#3949ab);
-  color:#fff;
-  padding:30px 10px;
-  text-align:center;
+  color: #fff;
+  padding: 40px 10px;
+  text-align: center;
 }
-header h1 { font-size:3em; margin:0; }
-header p { font-size:1.2em; margin:5px 0; }
+header h1 {
+  font-family: 'Times New Roman', serif;
+  font-size: 3.5em;
+  color: #ff0000; /* Mekundu */
+  margin: 0;
+}
+header p.intro {
+  font-family: 'Times New Roman', serif;
+  font-size: 1.3em;
+  margin: 10px 0;
+  color: #fff;
+}
 .job-card {
-  background:#fff;
-  border-radius:12px;
-  padding:20px;
-  margin:15px auto;
-  width:90%;
-  max-width:500px;
-  box-shadow:0 5px 12px rgba(0,0,0,0.15);
-  text-align:center;
-  cursor:pointer;
-  font-weight:bold;
-  font-size:1.3em;
-  transition:.3s;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px auto;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.3em;
+  transition: .3s;
 }
-.job-card:hover { background:#e3eaff; }
+.job-card:hover { background: #e3eaff; }
 input, textarea, button {
-  padding:10px;
-  margin:8px 0;
-  width:90%;
-  max-width:400px;
-  font-size:1.1em;
-  border-radius:6px;
-  border:1px solid #ccc;
+  padding: 10px;
+  margin: 8px 0;
+  width: 90%;
+  max-width: 400px;
+  font-size: 1.1em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 button {
-  background:#1a237e;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-  border:none;
-  transition:0.3s;
+  background: #1a237e;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
 }
-button:hover { background:#3949ab; }
-label { font-weight:bold; font-size:1.1em; text-align:left; display:block; margin-top:10px; }
-#applyForm { display:none; text-align:center; margin-top:20px; }
+button:hover { background: #3949ab; }
+label {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: left;
+  display: block;
+  margin-top: 10px;
+}
+#applyForm { display: none; text-align: center; margin-top: 20px; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Bionex Company Limited</h1>
-  <p>Welcome! I am Eng. Allan, Biomedical Engineer (MUHAS) & Developer of this system.</p>
-  <p>Explore available jobs and apply below.</p>
+  <p class="intro">Welcome! I am Eng. Allan, Biomedical Engineer (MUHAS) & Developer of this system.</p>
+  <p class="intro">Explore available jobs and apply below.</p>
 </header>
 
 <h2>Available Jobs</h2>
@@ -163,7 +179,7 @@ function selectJob(index){
 
 loadJobs();
 
-document.getElementById("applyForm").addEventListener("submit", function(e){
+document.getElementById("applyForm").addEventListener("submit", async function(e){
   e.preventDefault();
   let submitBtn = this.querySelector("button");
   submitBtn.disabled = true;
@@ -173,7 +189,6 @@ document.getElementById("applyForm").addEventListener("submit", function(e){
   let email = document.getElementById("email").value.trim();
   let phone = document.getElementById("phone").value.trim();
 
-  // Collect answers
   let answers = [];
   selectedJobData.questions.forEach((q,i)=>{
     let ans = document.getElementById("q"+(i+1)).value.trim();
@@ -182,7 +197,7 @@ document.getElementById("applyForm").addEventListener("submit", function(e){
 
   let fileInput = document.getElementById("attachment");
 
-  function finalizeSubmission(attachmentData){
+  async function finalizeSubmission(attachmentData){
     let applicants = JSON.parse(localStorage.getItem("apps")) || [];
     applicants.push({
       name, age, email, phone,
@@ -192,19 +207,19 @@ document.getElementById("applyForm").addEventListener("submit", function(e){
     });
     localStorage.setItem("apps", JSON.stringify(applicants));
 
-    alert("✅ Your application has been submitted successfully!\n\nThank you for applying to Bionex Company Limited. You will receive a notification via email regarding your application status.");
-
-    // Send email
-    emailjs.send("service_b11zlym","template_j9v1gyq",{
-      name: name,
-      message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers to the technical questions and any attachment provided.\n\nApplicant Info:\nName: ${name}\nAge: ${age}\nPhone: ${phone}\nEmail: ${email}\n\nOur team will carefully review your application and contact you with further updates.\n\nBest regards,\nBionex Company Limited`,
-      to_email: email
-    }).then(()=> console.log("Email sent"))
-      .catch(err => {
-        console.error("Email failed", err);
-        alert("Application submitted but email failed to send.");
+    try{
+      await emailjs.send("service_b11zlym","template_j9v1gyq",{
+        name: name,
+        message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers to the technical questions and any attachment provided.\n\nApplicant Info:\nName: ${name}\nAge: ${age}\nPhone: ${phone}\nEmail: ${email}\n\nOur team will carefully review your application and contact you with further updates.\n\nBest regards,\nBionex Company Limited`,
+        to_email: email
       });
+      console.log("Email sent successfully");
+    } catch(err){
+      console.error("Email failed", err);
+      alert("Application submitted but email failed to send.");
+    }
 
+    alert("✅ Your application has been submitted successfully!");
     document.getElementById("applyForm").reset();
     document.getElementById("applyForm").style.display = "none";
     submitBtn.disabled = false;
