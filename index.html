@@ -3,83 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Application Portal</title>
-
+<title>Flexible Job Portal Prototype</title>
 <style>
-body {
-    font-family: Arial;
-    background: linear-gradient(to right, #1e3c72, #2a5298);
-    color: white;
-    text-align: center;
-    padding: 20px;
-}
-
-h1 {
-    margin-bottom: 5px;
-}
-
-.container {
-    background: white;
-    color: black;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 400px;
-    margin: auto;
-}
-
-input, select, textarea {
-    width: 90%;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-    border: 1px solid gray;
-}
-
-button {
-    background: #2a5298;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #1e3c72;
-}
+body {font-family: Arial; margin:0; background:#f4f6f9;}
+header{background:#2a5298;color:white;padding:20px;text-align:center;}
+.container{padding:20px; max-width:800px; margin:auto;}
+.job-card{background:white; padding:15px; border-radius:8px; margin-bottom:15px; box-shadow:0 3px 6px rgba(0,0,0,0.1);}
+button{background:#2a5298; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;}
+button:hover{background:#1e3c72;}
+input,textarea,select{width:100%; padding:8px; margin:5px 0; border-radius:5px; border:1px solid #ccc;}
+.form-section{background:white; padding:15px; border-radius:8px; margin-top:20px; display:none;}
+label{font-weight:bold;}
 </style>
 </head>
-
 <body>
 
-<h1>Job Application Portal</h1>
-<p>Apply for available positions below</p>
+<header>
+<h1>Career Opportunities</h1>
+<p>Apply for your dream job today</p>
+</header>
 
 <div class="container">
-    <h2>Apply Now</h2>
 
-    <!-- BADILISHA LINK HAPA -->
-    <form action="https://formspree.io/f/mabcdxyz" method="POST">
+<!-- Job Listing -->
+<div id="jobsList"></div>
 
-        <!-- Job Selection -->
-        <select name="job_title" required>
-            <option value="">-- Select Job --</option>
-            <option>Biomedical Engineer</option>
-            <option>Nurse</option>
-            <option>IT Specialist</option>
-        </select>
+<!-- Apply Form -->
+<div id="applyForm" class="form-section">
+<h3 id="applyJobTitle"></h3>
+<form id="jobApplyForm" action="https://formspree.io/f/xpqoozrn" method="POST" enctype="multipart/form-data" target="_blank">
+    <input type="hidden" name="job_title" id="jobInput">
 
-        <input type="text" name="name" placeholder="Full Name" required>
+    <input type="text" name="name" placeholder="Full Name" required>
+    <input type="email" name="email" placeholder="Email Address" required>
+    <input type="text" name="phone" placeholder="Phone Number" required>
+    <input type="number" name="age" id="applicantAge" placeholder="Age">
 
-        <input type="email" name="email" placeholder="Email Address" required>
+    <label id="skillsLabel" style="display:none">Skills (comma separated)</label>
+    <input type="text" name="skills" id="applicantSkills" style="display:none" placeholder="Skills">
 
-        <input type="number" name="age" placeholder="Age" required>
+    <label id="cvLabel" style="display:none">Upload CV / Certificates</label>
+    <input type="file" name="cv" id="applicantCV" style="display:none">
 
-        <textarea name="message" placeholder="Why should we hire you?" required></textarea>
-
-        <button type="submit">Submit Application</button>
-    </form>
+    <textarea name="message" id="applicantMsg" placeholder="Why should we hire you?"></textarea>
+    <button type="submit">Submit Application</button>
+</form>
 </div>
+
+</div>
+
+<script>
+// ==== Jobs array with criteria ====
+const jobs = [
+  {
+    title: "Mpesa Agent",
+    description: "Handle mobile money transactions and provide excellent customer service.",
+    criteria: {
+      ageRequired: true,
+      skillsRequired: true,
+      cvRequired: false,
+      messageRequired: true
+    }
+  },
+  {
+    title: "IT Specialist",
+    description: "Manage systems and support digital infrastructure. Upload all your certificates.",
+    criteria: {
+      ageRequired: true,
+      skillsRequired: true,
+      cvRequired: true,  // CV/Certificates required
+      messageRequired: true
+    }
+  },
+  {
+    title: "Biomedical Engineer",
+    description: "Work in hospital equipment maintenance and innovation. Upload all your certificates.",
+    criteria: {
+      ageRequired: true,
+      skillsRequired: true,
+      cvRequired: true,  // CV/Certificates required
+      messageRequired: true
+    }
+  }
+];
+// ==== End of jobs list ====
+
+const jobsDiv = document.getElementById("jobsList");
+jobs.forEach((job, index) => {
+    const div = document.createElement("div");
+    div.className = "job-card";
+    div.innerHTML = `
+        <h3>${job.title}</h3>
+        <p>${job.description}</p>
+        <button onclick="showApplyForm(${index})">Apply</button>
+    `;
+    jobsDiv.appendChild(div);
+});
+
+function showApplyForm(jobIndex){
+    const job = jobs[jobIndex];
+    document.getElementById("applyJobTitle").innerText = "Apply for " + job.title;
+    document.getElementById("jobInput").value = job.title;
+
+    // Show/hide fields based on criteria
+    document.getElementById("applicantAge").style.display = job.criteria.ageRequired ? "block" : "none";
+    document.getElementById("applicantSkills").style.display = job.criteria.skillsRequired ? "block" : "none";
+    document.getElementById("skillsLabel").style.display = job.criteria.skillsRequired ? "block" : "none";
+    document.getElementById("applicantCV").style.display = job.criteria.cvRequired ? "block" : "none";
+    document.getElementById("cvLabel").style.display = job.criteria.cvRequired ? "block" : "none";
+    document.getElementById("applicantMsg").style.display = job.criteria.messageRequired ? "block" : "none";
+
+    document.getElementById("applyForm").style.display = "block";
+    window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+}
+
+// Reset form & success alert
+document.getElementById("jobApplyForm").addEventListener("submit", () => {
+    setTimeout(() => {
+        document.getElementById("jobApplyForm").reset();
+        document.getElementById("applyForm").style.display="none";
+        alert("Your application has been submitted successfully!");
+    }, 500);
+});
+</script>
 
 </body>
 </html>
