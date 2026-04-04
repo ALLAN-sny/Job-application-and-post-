@@ -1,130 +1,113 @@
 <!DOCTYPE html>
-<html lang="sw">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionex Careers | Home</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Bionex Careers | Apply</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1a237e; --secondary: #3949ab; --accent: #ff0000; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 60px 20px; text-align: center; clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); }
-        header h1 { margin: 0; font-size: 3em; letter-spacing: 2px; }
-        .container { max-width: 800px; margin: -50px auto 50px; padding: 20px; }
-        .job-card { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s; border-left: 5px solid var(--primary); cursor: pointer; }
-        .job-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); background: #f0f3ff; }
-        .form-container { display: none; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); animation: slideIn 0.5s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.3s; }
-        button:hover { background: var(--secondary); }
+        :root { --primary: #1a237e; --bg: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; }
+        .container { max-width: 700px; margin: 20px auto; padding: 20px; }
+        .job-item { background: white; padding: 20px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; border-left: 5px solid #3949ab; }
+        .job-item:hover { transform: translateX(10px); background: #e8eaf6; }
+        .form-card { display: none; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .back-btn { background: #666; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Bionex Company Ltd</h1>
-    <p>Karibu! Mimi ni Eng. Allan, Biomedical Engineer & Developer.</p>
+    <h1>Bionex Company Limited</h1>
+    <p>Founder: <strong>Eng. Allan</strong></p>
+    <p><small>Biomedical Engineer (MUHAS) & Developer</small></p>
 </header>
 
 <div class="container">
-    <div id="jobsContainer">
-        <h2 style="text-align: center; color: var(--primary);">Nafasi za Kazi Zilizopo</h2>
-        <div id="jobsList"></div>
+    <div id="jobListSection">
+        <h2 style="color: var(--primary);">Available Vacancies</h2>
+        <div id="jobsContainer"></div>
     </div>
 
-    <div id="applyForm" class="form-container">
-        <h2 id="jobTitleDisplay" style="color: var(--primary);">Omba Kazi</h2>
-        <input id="name" type="text" placeholder="Jina Kamili" required>
-        <div style="display: flex; gap: 10px;">
-            <input id="age" type="number" placeholder="Umri" style="flex: 1;">
-            <input id="phone" type="tel" placeholder="Namba ya Simu" style="flex: 2;">
+    <div id="applySection" class="form-card">
+        <h2 id="selectedJobTitle">Apply Now</h2>
+        <input type="text" id="applicantName" placeholder="Full Name" required>
+        <input type="number" id="applicantAge" placeholder="Age" required>
+        <input type="email" id="applicantEmail" placeholder="Email Address" required>
+        <input type="tel" id="applicantPhone" placeholder="Phone Number" required>
+        
+        <div id="attachmentArea" style="display:none;">
+            <label><strong>Upload CV/Resume (Required):</strong></label>
+            <input type="file" id="cvFile">
         </div>
-        <input id="email" type="email" placeholder="Barua Pepe (Email)" required>
-        
-        <div id="attachmentDiv">
-            <label style="font-weight: bold;">Pakia CV yako (PDF/Image):</label>
-            <input type="file" id="attachment" accept="image/*,.pdf">
-        </div>
-        
-        <div id="questionsDiv"></div>
-        
-        <button id="submitBtn" onclick="handleFormSubmit()">Tuma Maombi</button>
-        <button class="back-btn" onclick="location.reload()">Rudi Nyuma</button>
+
+        <div id="interviewQuestions"></div>
+
+        <button onclick="submitApplication()">Submit Application</button>
+        <button class="back-btn" onclick="location.reload()">Back to Jobs</button>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-    emailjs.init("gCwHsyNsD024VEWx7");
-    let selectedJobData = null;
+    const jobs = JSON.parse(localStorage.getItem("bionex_posted_jobs")) || [];
+    const container = document.getElementById("jobsContainer");
 
-    const jobs = [
-        { title: "Software Engineer", cv: true, qs: ["Uzoefu wa Web Dev?", "Lugha unazojua?"] },
-        { title: "Biomedical Technician", cv: true, qs: ["Vifaa vya tiba ulivyowahi kutengeneza?", "Changamoto kubwa ya kiufundi?"] },
-        { title: "Mpesa Agent", cv: false, qs: ["Una uzoefu wa huduma kwa wateja?", "Unakaa wapi?"] }
-    ];
-
-    function init() {
-        const list = document.getElementById("jobsList");
-        jobs.forEach((job, i) => {
-            list.innerHTML += `
-                <div class="job-card" onclick="selectJob(${i})">
-                    <h3><i class="fas fa-briefcase"></i> ${job.title}</h3>
-                    <p style="color: #666;">Bofya hapa kutuma maombi yako sasa.</p>
+    function loadJobs() {
+        if(jobs.length === 0) container.innerHTML = "<p>No active jobs at the moment.</p>";
+        jobs.forEach((job, index) => {
+            container.innerHTML += `
+                <div class="job-item" onclick="showForm(${index})">
+                    <strong>${job.title}</strong>
                 </div>`;
         });
     }
 
-    function selectJob(i) {
-        selectedJobData = jobs[i];
-        document.getElementById("jobsContainer").style.display = "none";
-        document.getElementById("applyForm").style.display = "block";
-        document.getElementById("jobTitleDisplay").innerText = "Omba Nafasi ya: " + selectedJobData.title;
-        document.getElementById("attachmentDiv").style.display = selectedJobData.cv ? "block" : "none";
+    let activeJobIndex = null;
+    function showForm(index) {
+        activeJobIndex = index;
+        const job = jobs[index];
+        document.getElementById("jobListSection").style.display = "none";
+        document.getElementById("applySection").style.display = "block";
+        document.getElementById("selectedJobTitle").innerText = "Applying for: " + job.title;
         
-        const qDiv = document.getElementById("questionsDiv");
-        qDiv.innerHTML = "";
-        selectedJobData.qs.forEach((q, idx) => {
-            qDiv.innerHTML += `<label>${q}</label><textarea id="q${idx}"></textarea>`;
+        if(job.attachmentRequired) document.getElementById("attachmentArea").style.display = "block";
+
+        const qArea = document.getElementById("interviewQuestions");
+        qArea.innerHTML = "<h3>Interview Questions</h3>";
+        job.questions.split(',').forEach((q, i) => {
+            if(q.trim()) qArea.innerHTML += `<label>${q}</label><textarea id="ans_${i}" placeholder="Your answer..."></textarea>`;
         });
     }
 
-    async function handleFormSubmit() {
-        const btn = document.getElementById("submitBtn");
-        const data = {
+    function submitApplication() {
+        const job = jobs[activeJobIndex];
+        const answers = [];
+        job.questions.split(',').forEach((q, i) => {
+            if(q.trim()) answers.push({ question: q, answer: document.getElementById(`ans_${i}`).value });
+        });
+
+        const application = {
             id: Date.now(),
-            name: document.getElementById("name").value,
-            email: document.getElementById("email").value,
-            phone: document.getElementById("phone").value,
-            job: selectedJobData.title,
-            answers: selectedJobData.qs.map((_, i) => document.getElementById(`q${i}`).value),
-            date: new Date().toLocaleString()
+            jobTitle: job.title,
+            name: document.getElementById("applicantName").value,
+            email: document.getElementById("applicantEmail").value,
+            phone: document.getElementById("applicantPhone").value,
+            age: document.getElementById("applicantAge").value,
+            answers: answers,
+            status: "Pending"
         };
 
-        if(!data.name || !data.email) return alert("Jaza jina na email!");
+        let allApps = JSON.parse(localStorage.getItem("bionex_submissions")) || [];
+        allApps.push(application);
+        localStorage.setItem("bionex_submissions", JSON.stringify(allApps));
 
-        btn.disabled = true; btn.innerText = "Inatuma...";
-
-        // Save to LocalStorage
-        let apps = JSON.parse(localStorage.getItem("bionex_apps")) || [];
-        apps.push(data);
-        localStorage.setItem("bionex_apps", JSON.stringify(apps));
-
-        // EmailJS call (Optional/Kama bado unahitaji)
-        try {
-            await emailjs.send("service_b11zlym", "template_j9v1gyq", {
-                from_name: data.name,
-                job_title: data.job,
-                message: `Maombi mapya kutoka kwa ${data.name}`
-            });
-        } catch(e) { console.error(e); }
-
-        alert("Hongera! Maombi yako yamepokelewa.");
-        window.location.href = "admin.html";
+        alert("Application sent successfully!");
+        location.reload();
     }
-    init();
+    loadJobs();
 </script>
 </body>
 </html>
