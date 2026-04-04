@@ -52,6 +52,7 @@ button {
   transition:0.3s;
 }
 button:hover { background:#3949ab; }
+label { font-weight:bold; font-size:1.1em; text-align:left; display:block; margin-top:10px; }
 #applyForm { display:none; text-align:center; margin-top:20px; }
 </style>
 </head>
@@ -69,6 +70,7 @@ button:hover { background:#3949ab; }
 <form id="applyForm">
 <h2>Application Form</h2>
 <input id="name" placeholder="Full Name" required><br>
+<input id="age" type="number" placeholder="Age" required><br>
 <input id="email" type="email" placeholder="Email" required><br>
 <input id="phone" placeholder="Phone Number" required><br>
 
@@ -146,11 +148,18 @@ function selectJob(index){
   // CV field visible only if required
   document.getElementById("attachmentDiv").style.display=selectedJobData.cvRequired?"block":"none";
 
-  // Load technical questions
+  // Load technical questions with label + placeholder
   let questionsDiv=document.getElementById("questionsDiv");
   questionsDiv.innerHTML="";
   selectedJobData.questions.forEach((q,i)=>{
-    questionsDiv.innerHTML+=`<textarea id="q${i+1}" placeholder="${q}" required></textarea><br>`;
+    let label = document.createElement("label");
+    label.textContent = `Question ${i+1}: ${q}`;
+    questionsDiv.appendChild(label);
+    let textarea = document.createElement("textarea");
+    textarea.id = "q"+(i+1);
+    textarea.placeholder = "Type your answer here...";
+    textarea.required = true;
+    questionsDiv.appendChild(textarea);
   });
 }
 
@@ -159,6 +168,7 @@ loadJobs();
 document.getElementById("applyForm").addEventListener("submit",function(e){
   e.preventDefault();
   let name=document.getElementById("name").value;
+  let age=document.getElementById("age").value;
   let email=document.getElementById("email").value;
   let phone=document.getElementById("phone").value;
   
@@ -176,17 +186,20 @@ document.getElementById("applyForm").addEventListener("submit",function(e){
 
   if(fileInput.files.length>0){
     let reader=new FileReader();
-    reader.onload=function(){ saveApplication(name,email,phone,answers,reader.result);}
+    reader.onload=function(){ saveApplication(name,age,email,phone,answers,reader.result);}
     reader.readAsDataURL(fileInput.files[0]);
   }else{
-    saveApplication(name,email,phone,answers,"");
+    saveApplication(name,age,email,phone,answers,"");
   }
 });
 
-function saveApplication(name,email,phone,answers,attachment){
+function saveApplication(name,age,email,phone,answers,attachment){
   let applicants=JSON.parse(localStorage.getItem("apps"))||[];
   applicants.push({
-    name,email,phone,
+    name,
+    age,
+    email,
+    phone,
     jobTitle:selectedJobData.title,
     cvRequired:selectedJobData.cvRequired,
     answers,
@@ -199,7 +212,7 @@ function saveApplication(name,email,phone,answers,attachment){
   // Send email
   emailjs.send("service_b11zlym","template_j9v1gyq",{
     name:name,
-    message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers to the technical questions and any attachment provided.\n\nOur team will carefully review your application and contact you with further updates.\n\nBest regards,\nBionex Company Limited`,
+    message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers to the technical questions and any attachment provided.\n\nApplicant Info:\nName: ${name}\nAge: ${age}\nPhone: ${phone}\nEmail: ${email}\n\nOur team will carefully review your application and contact you with further updates.\n\nBest regards,\nBionex Company Limited`,
     to_email:email
   }).then(()=>console.log("Email sent")).catch(()=>console.log("Email failed"));
 
