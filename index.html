@@ -1,101 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Simple Job Portal</title>
-    <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Application - Eng. Allan</title>
 
-        input, textarea {
-            width: 100%;
-            margin: 5px 0;
-            padding: 8px;
-        }
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
 
-        button {
-            background: green;
-            color: white;
-            padding: 10px;
-            border: none;
-            margin-top: 5px;
-        }
+.container {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+}
 
-        .job {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-top: 10px;
-        }
-    </style>
+input, textarea {
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid gray;
+}
+
+button {
+    background: #2a5298;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1e3c72;
+}
+</style>
 </head>
+
 <body>
 
-<h1>Smart Job Portal</h1>
+<h1>Welcome to Job Application Portal</h1>
+<p>Powered by Eng. Allan | MUHAS Biomedical Engineer</p>
 
-<h2>Post a Job (Employer)</h2>
-<input type="text" id="title" placeholder="Job Title">
-<input type="text" id="company" placeholder="Company Name">
-<textarea id="desc" placeholder="Job Description"></textarea>
-<button onclick="postJob()">Post Job</button>
+<div class="container">
+    <h2>Apply Now</h2>
 
-<hr>
+    <!-- IMPORTANT: BADILISHA HAPA -->
+    <form action="https://formspree.io/f/abcd1234" method="POST">
 
-<h2>Available Jobs</h2>
-<div id="jobs"></div>
+        <input type="text" name="name" placeholder="Full Name" required>
 
-<script>
-function postJob() {
-    let title = document.getElementById("title").value;
-    let company = document.getElementById("company").value;
-    let desc = document.getElementById("desc").value;
+        <input type="email" name="email" placeholder="Email Address" required>
 
-    let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+        <input type="number" name="age" placeholder="Age" required>
 
-    jobs.push({title, company, desc});
-    localStorage.setItem("jobs", JSON.stringify(jobs));
+        <textarea name="message" placeholder="Why should we hire you?" required></textarea>
 
-    displayJobs();
-}
-
-function displayJobs() {
-    let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
-    let container = document.getElementById("jobs");
-
-    container.innerHTML = "";
-
-    jobs.forEach((job, index) => {
-        let div = document.createElement("div");
-        div.className = "job";
-
-        div.innerHTML = `
-            <h3>${job.title}</h3>
-            <p><b>${job.company}</b></p>
-            <p>${job.desc}</p>
-
-            <input type="text" id="name${index}" placeholder="Your Name">
-            <textarea id="msg${index}" placeholder="Why should we hire you?"></textarea>
-            <button onclick="apply(${index})">Apply</button>
-        `;
-
-        container.appendChild(div);
-    });
-}
-
-function apply(index) {
-    let name = document.getElementById("name"+index).value;
-    let msg = document.getElementById("msg"+index).value;
-
-    let applications = JSON.parse(localStorage.getItem("applications")) || [];
-
-    applications.push({name, msg});
-    localStorage.setItem("applications", JSON.stringify(applications));
-
-    alert("Application sent!");
-}
-
-displayJobs();
-</script>
+        <button type="submit">Submit Application</button>
+    </form>
+</div>
 
 </body>
 </html>
