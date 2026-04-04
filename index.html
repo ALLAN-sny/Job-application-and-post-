@@ -4,127 +4,180 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Allan Careers Portal</title>
-
 <style>
-body {font-family: Arial; margin:0; background:#f4f6f9;}
-header{background:#1e3c72;color:white;padding:30px;text-align:center;}
+body {font-family: Arial; margin:0; background:#eef2f7;}
+header{background: linear-gradient(135deg,#1e3c72,#2a5298); color:white; padding:25px; text-align:center;}
 .container{padding:20px; max-width:900px; margin:auto;}
-.job-card{background:white; padding:15px; border-radius:10px; margin-bottom:15px; box-shadow:0 3px 8px rgba(0,0,0,0.1);}
-button{background:#1e3c72; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;}
+.job-card, .form-section, .dashboard{background:white; padding:20px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+button{background:#1e3c72; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;}
 button:hover{background:#16325c;}
-input,textarea{width:100%; padding:10px; margin:6px 0; border-radius:5px; border:1px solid #ccc;}
-.form-section{background:white; padding:15px; border-radius:10px; margin-top:20px; display:none;}
-#welcome{background:white;padding:20px;border-radius:10px;margin-bottom:20px;text-align:center;}
+input,textarea{width:100%; padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ccc;}
+h2{color:#1e3c72;}
+table{width:100%; border-collapse: collapse;}
+table, th, td{border:1px solid #ccc;}
+th, td{padding:10px; text-align:left;}
+.accept{background:green;}
+.reject{background:red;}
+.accept:hover{background:#145214;}
+.reject:hover{background:#7a0000;}
 </style>
 </head>
-
 <body>
 
 <header>
-<h1>Allan Job Portal</h1>
+<h1>Allan Careers Portal</h1>
 <p>Connecting Talent with Opportunity</p>
 </header>
 
 <div class="container">
 
-<!-- INTRO -->
 <div id="welcome">
 <h2>Welcome 👋</h2>
-<p>
-Hello, I am Allan – Biomedical Engineer & Developer from MUHAS.  
-This platform allows you to apply for available jobs easily and professionally.  
-Please explore opportunities below and submit your application.
-</p>
+<p>Hello, I am Allan – Biomedical Engineer & Developer from MUHAS. Browse jobs below and apply.</p>
 <button onclick="showJobs()">View Jobs</button>
+<button onclick="showDashboard()">Boss Dashboard</button>
 </div>
 
-<!-- JOBS -->
 <div id="jobsSection" style="display:none;">
 <h2>Available Jobs</h2>
 <div id="jobsList"></div>
 </div>
 
-<!-- FORM -->
-<div id="applyForm" class="form-section">
+<div id="applyForm" class="form-section" style="display:none;">
 <h3 id="applyJobTitle"></h3>
-
-<form action="https://formspree.io/f/xpqoozrn" method="POST" enctype="multipart/form-data" target="_blank">
-<input type="hidden" name="job_title" id="jobInput">
-
-<input type="text" name="name" placeholder="Full Name" required>
-<input type="email" name="email" placeholder="Email Address" required>
-<input type="text" name="phone" placeholder="Phone Number" required>
-<input type="number" name="age" id="age">
-
+<form id="jobForm">
+<input type="hidden" id="jobInput">
+<input type="text" id="name" placeholder="Full Name" required>
+<input type="email" id="email" placeholder="Email Address" required>
+<input type="text" id="phone" placeholder="Phone Number" required>
+<input type="number" id="age" placeholder="Age">
 <label id="skillsLabel" style="display:none">Skills</label>
-<input type="text" name="skills" id="skills" style="display:none">
-
+<input type="text" id="skills" style="display:none" placeholder="Your Skills">
 <label id="cvLabel" style="display:none">Upload CV / Certificates</label>
-<input type="file" name="cv" id="cv" style="display:none">
-
-<textarea name="message" id="msg" placeholder="Why should we hire you?"></textarea>
-
+<input type="file" id="cv" style="display:none" accept=".pdf,.doc,.docx,.jpg,.png">
+<textarea id="msg" placeholder="Why should we hire you?"></textarea>
 <button type="submit">Submit Application</button>
 </form>
+</div>
+
+<div id="dashboard" class="dashboard" style="display:none;">
+<h2>Applicants Dashboard</h2>
+<table id="appTable">
+<tr>
+<th>Job</th><th>Name</th><th>Email</th><th>Phone</th><th>Age</th><th>Skills</th><th>CV</th><th>Message</th><th>Status</th><th>Action</th>
+</tr>
+</table>
 </div>
 
 </div>
 
 <script>
-// SHOW JOBS
-function showJobs(){
-document.getElementById("welcome").style.display="none";
-document.getElementById("jobsSection").style.display="block";
-}
-
-// JOBS DATA
+// Jobs definition
 const jobs = [
-{
-title:"Mpesa Agent",
-description:"Handle mobile money transactions and customer service.",
-criteria:{age:true, skills:true, cv:false, msg:true}
-},
-{
-title:"IT Specialist",
-description:"Manage systems. Upload all certificates.",
-criteria:{age:true, skills:true, cv:true, msg:true}
-},
-{
-title:"Biomedical Engineer",
-description:"Maintain medical equipment. Upload all certificates.",
-criteria:{age:true, skills:true, cv:true, msg:true}
-}
+{title:"Mpesa Agent",description:"Handle mobile money transactions",criteria:{age:true,skills:true,cv:false,msg:true}},
+{title:"IT Specialist",description:"Manage IT systems, all certificates required",criteria:{age:true,skills:true,cv:true,msg:true}},
+{title:"Biomedical Engineer",description:"Maintain medical equipment, all certificates required",criteria:{age:true,skills:true,cv:true,msg:true}}
 ];
 
-// DISPLAY JOBS
+// Display jobs
 const jobsList = document.getElementById("jobsList");
+const appTable = document.getElementById("appTable");
+
 jobs.forEach((job,i)=>{
-let div=document.createElement("div");
-div.className="job-card";
-div.innerHTML=`
-<h3>${job.title}</h3>
-<p>${job.description}</p>
-<button onclick="apply(${i})">Apply</button>
-`;
-jobsList.appendChild(div);
+    let div = document.createElement("div");
+    div.className="job-card";
+    div.innerHTML=`<h3>${job.title}</h3><p>${job.description}</p><button onclick="apply(${i})">Apply Now</button>`;
+    jobsList.appendChild(div);
 });
 
-// APPLY FUNCTION
+function showJobs(){
+    document.getElementById("welcome").style.display="none";
+    document.getElementById("jobsSection").style.display="block";
+}
+
+// Apply function with dynamic CV field
 function apply(i){
-let job=jobs[i];
-document.getElementById("applyForm").style.display="block";
-document.getElementById("applyJobTitle").innerText="Apply for "+job.title;
-document.getElementById("jobInput").value=job.title;
+    let job = jobs[i];
+    document.getElementById("applyForm").style.display="block";
+    document.getElementById("applyJobTitle").innerText="Apply for "+job.title;
+    document.getElementById("jobInput").value = job.title;
 
-// dynamic fields
-document.getElementById("age").style.display=job.criteria.age?"block":"none";
-document.getElementById("skills").style.display=job.criteria.skills?"block":"none";
-document.getElementById("skillsLabel").style.display=job.criteria.skills?"block":"none";
-document.getElementById("cv").style.display=job.criteria.cv?"block":"none";
-document.getElementById("cvLabel").style.display=job.criteria.cv?"block":"none";
-document.getElementById("msg").style.display=job.criteria.msg?"block":"none";
+    // Dynamic fields
+    document.getElementById("age").style.display = job.criteria.age?"block":"none";
+    document.getElementById("skills").style.display = job.criteria.skills?"block":"none";
+    document.getElementById("skillsLabel").style.display = job.criteria.skills?"block":"none";
+    document.getElementById("cv").style.display = job.criteria.cv?"block":"none";
+    document.getElementById("cvLabel").style.display = job.criteria.cv?"block":"none";
+    document.getElementById("msg").style.display = job.criteria.msg?"block":"none";
 
-window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+
+// Form submission
+document.getElementById("jobForm").addEventListener("submit",function(e){
+    e.preventDefault();
+    let reader = new FileReader();
+    let cvFile = document.getElementById("cv").files[0];
+    if(cvFile){
+        reader.readAsDataURL(cvFile);
+        reader.onload = function(){ saveApplication(reader.result); }
+    }else{
+        saveApplication(null);
+    }
+});
+
+function saveApplication(cvData){
+    let appData = {
+        job: document.getElementById("jobInput").value,
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        age: document.getElementById("age").value,
+        skills: document.getElementById("skills").value,
+        cv: cvData,
+        msg: document.getElementById("msg").value,
+        status: "Pending"
+    };
+    let allApps = JSON.parse(localStorage.getItem("applications") || "[]");
+    allApps.push(appData);
+    localStorage.setItem("applications", JSON.stringify(allApps));
+    alert("Application submitted!");
+    document.getElementById("jobForm").reset();
+    document.getElementById("applyForm").style.display="none";
+    loadDashboard();
+}
+
+// Dashboard functions
+function showDashboard(){
+    document.getElementById("welcome").style.display="none";
+    document.getElementById("jobsSection").style.display="none";
+    document.getElementById("applyForm").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    loadDashboard();
+}
+
+function loadDashboard(){
+    let allApps = JSON.parse(localStorage.getItem("applications") || "[]");
+    let html = `<tr>
+    <th>Job</th><th>Name</th><th>Email</th><th>Phone</th><th>Age</th><th>Skills</th><th>CV</th><th>Message</th><th>Status</th><th>Action</th>
+    </tr>`;
+    allApps.forEach((app,i)=>{
+        let cvLink = app.cv?`<a href="${app.cv}" target="_blank">View CV</a>`:"No CV";
+        html += `<tr>
+        <td>${app.job}</td><td>${app.name}</td><td>${app.email}</td><td>${app.phone}</td><td>${app.age}</td>
+        <td>${app.skills}</td><td>${cvLink}</td><td>${app.msg}</td><td>${app.status}</td>
+        <td><button class="accept" onclick="updateStatus(${i},'Accepted')">Accept</button>
+        <button class="reject" onclick="updateStatus(${i},'Rejected')">Reject</button></td>
+        </tr>`;
+    });
+    appTable.innerHTML = html;
+}
+
+function updateStatus(i,status){
+    let allApps = JSON.parse(localStorage.getItem("applications") || "[]");
+    allApps[i].status = status;
+    localStorage.setItem("applications", JSON.stringify(allApps));
+    loadDashboard();
 }
 </script>
 
