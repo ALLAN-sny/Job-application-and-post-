@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Application - Eng. Allan</title>
+<title>Job Application Portal</title>
 
 <style>
 body {
@@ -12,6 +12,10 @@ body {
     color: white;
     text-align: center;
     padding: 20px;
+}
+
+h1 {
+    margin-bottom: 5px;
 }
 
 .container {
@@ -23,7 +27,7 @@ body {
     margin: auto;
 }
 
-input, textarea {
+input, select, textarea {
     width: 90%;
     padding: 10px;
     margin: 10px;
@@ -48,14 +52,22 @@ button:hover {
 
 <body>
 
-<h1>Welcome to Job Application Portal</h1>
-<p>Powered by Eng. Allan | MUHAS Biomedical Engineer</p>
+<h1>Job Application Portal</h1>
+<p>Apply for available positions below</p>
 
 <div class="container">
     <h2>Apply Now</h2>
 
-    <!-- IMPORTANT: BADILISHA HAPA -->
-    <form action="https://formspree.io/f/abcd1234" method="POST">
+    <!-- BADILISHA LINK HAPA -->
+    <form action="https://formspree.io/f/mabcdxyz" method="POST">
+
+        <!-- Job Selection -->
+        <select name="job_title" required>
+            <option value="">-- Select Job --</option>
+            <option>Biomedical Engineer</option>
+            <option>Nurse</option>
+            <option>IT Specialist</option>
+        </select>
 
         <input type="text" name="name" placeholder="Full Name" required>
 
