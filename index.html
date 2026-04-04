@@ -1,261 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="sw">
 <head>
-<title>Bionex Careers</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #eef2f7;
-  color: #222;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-}
-header {
-  background: linear-gradient(90deg,#1a237e,#3949ab);
-  color: #fff;
-  padding: 40px 10px;
-  text-align: center;
-}
-header h1 {
-  font-family: 'Times New Roman', serif;
-  font-size: 3.5em;
-  color: #ff0000; /* mekundu */
-  margin: 0;
-}
-header p.intro {
-  font-family: 'Times New Roman', serif;
-  font-size: 1.3em;
-  margin: 10px 0;
-  color: #fff;
-}
-.job-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 15px auto;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-  text-align: center;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.3em;
-  transition: .3s;
-}
-.job-card:hover { background: #e3eaff; }
-input, textarea, button {
-  padding: 10px;
-  margin: 8px 0;
-  width: 90%;
-  max-width: 400px;
-  font-size: 1.1em;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-button {
-  background: #1a237e;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  transition: 0.3s;
-}
-button:hover { background: #3949ab; }
-label {
-  font-weight: bold;
-  font-size: 1.1em;
-  text-align: left;
-  display: block;
-  margin-top: 10px;
-}
-#applyForm { display: none; text-align: center; margin-top: 20px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bionex Careers</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #eef2f7; color: #222; text-align: center; margin: 0; padding: 0; }
+        header { background: linear-gradient(90deg,#1a237e,#3949ab); color: #fff; padding: 40px 10px; }
+        header h1 { font-family: 'Times New Roman', serif; font-size: 2.5em; color: #ff0000; margin: 0; }
+        .intro { font-size: 1.1em; margin: 10px 0; color: #fff; }
+        .job-card { background: #fff; border-radius: 12px; padding: 20px; margin: 15px auto; width: 90%; max-width: 500px; box-shadow: 0 5px 12px rgba(0,0,0,0.15); cursor: pointer; font-weight: bold; transition: .3s; }
+        .job-card:hover { background: #e3eaff; transform: scale(1.02); }
+        input, textarea, button { padding: 12px; margin: 8px 0; width: 90%; max-width: 400px; font-size: 1em; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: #1a237e; color: #fff; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        button:hover { background: #3949ab; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        label { font-weight: bold; text-align: left; display: block; margin: 10px auto; width: 90%; max-width: 400px; }
+        #applyForm { display: none; background: white; padding: 20px; border-radius: 15px; width: 95%; max-width: 500px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    </style>
 </head>
 <body>
 
 <header>
-  <h1>Bionex Company Limited</h1>
-  <p class="intro">Welcome! I am Eng. Allan, Biomedical Engineer (MUHAS) & Developer of this system.</p>
-  <p class="intro">Explore available jobs and apply below.</p>
+    <h1>Bionex Company Limited</h1>
+    <p class="intro">Welcome! I am Eng. Allan, Biomedical Engineer (MUHAS) & Developer.</p>
+    <p class="intro">Explore available jobs and apply below.</p>
 </header>
 
 <h2>Available Jobs</h2>
 <div id="jobsList"></div>
 
-<form id="applyForm" novalidate>
-<h2>Application Form</h2>
-<input id="name" placeholder="Full Name"><br>
-<input id="age" type="number" placeholder="Age"><br>
-<input id="email" type="email" placeholder="Email"><br>
-<input id="phone" placeholder="Phone Number"><br>
+<div id="applyForm">
+    <h2>Application Form</h2>
+    <input id="name" type="text" placeholder="Full Name" required>
+    <input id="age" type="number" placeholder="Age" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="phone" type="tel" placeholder="Phone Number" required>
 
-<div id="attachmentDiv">
-<input type="file" id="attachment"><br>
+    <div id="attachmentDiv">
+        <label>Upload CV (PDF/Image):</label>
+        <input type="file" id="attachment" accept="image/*,.pdf">
+    </div>
+
+    <div id="questionsDiv"></div>
+
+    <button id="submitBtn" onclick="handleFormSubmit()">Submit Application</button>
 </div>
-
-<div id="questionsDiv">
-<!-- Technical questions appear here -->
-</div>
-
-<button type="submit">Submit Application</button>
-</form>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-emailjs.init("gCwHsyNsD024VEWx7");
+    emailjs.init("gCwHsyNsD024VEWx7");
 
-let selectedJobData = null;
+    let selectedJobData = null;
+    const jobsExample = [
+        { title: "Software Engineer", cvRequired: true, questions: ["Web Dev Experience?", "Languages proficient in?"] },
+        { title: "Biomedical Technician", cvRequired: true, questions: ["Diagnostic equipment used?", "Technical issue solved?"] },
+        { title: "Mpesa transaction", cvRequired: false, questions: ["Experience in Mpesa?", "Customer service skills?"] }
+    ];
 
-// Example jobs
-let jobsExample = [
-  {
-    title: "Software Engineer",
-    cvRequired: true,
-    questions: [
-      "Describe your experience with web development.",
-      "Which programming languages are you proficient in?",
-      "Provide an example of a challenging technical problem you solved."
-    ]
-  },
-  {
-    title: "Biomedical Technician",
-    cvRequired: true,
-    questions: [
-      "Describe your experience with biomedical devices.",
-      "Which diagnostic equipment have you worked with?",
-      "Explain a situation where you solved a technical issue."
-    ]
-  },
-  {
-    title: "IT Support",
-    cvRequired: false,
-    questions: [
-      "Describe your experience in IT support.",
-      "How do you troubleshoot network issues?",
-      "Explain a time you resolved a critical IT problem."
-    ]
-  }
-];
-
-if(!localStorage.getItem("jobs")){
-  localStorage.setItem("jobs", JSON.stringify(jobsExample));
-}
-
-// Load jobs
-function loadJobs(){
-  let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
-  let jobsList = document.getElementById("jobsList");
-  jobsList.innerHTML = "";
-  jobs.forEach((job,index)=>{
-    let card = document.createElement("div");
-    card.className = "job-card";
-    card.textContent = job.title;
-    card.onclick = ()=> selectJob(index);
-    jobsList.appendChild(card);
-  });
-}
-
-// Select job
-function selectJob(index){
-  let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
-  selectedJobData = jobs[index];
-  document.getElementById("applyForm").style.display = "block";
-
-  document.getElementById("attachmentDiv").style.display = selectedJobData.cvRequired ? "block" : "none";
-
-  let questionsDiv = document.getElementById("questionsDiv");
-  questionsDiv.innerHTML = "";
-  selectedJobData.questions.forEach((q,i)=>{
-    let label = document.createElement("label");
-    label.textContent = `Question ${i+1}: ${q}`;
-    questionsDiv.appendChild(label);
-
-    let textarea = document.createElement("textarea");
-    textarea.id = "q"+(i+1);
-    textarea.name = "q"+(i+1);
-    textarea.placeholder = "Type your answer here...";
-    questionsDiv.appendChild(textarea);
-  });
-}
-
-loadJobs();
-
-// Handle submit
-document.getElementById("applyForm").addEventListener("submit", function(e){
-  e.preventDefault();
-  let submitBtn = this.querySelector("button");
-  submitBtn.disabled = true;
-
-  // Collect values
-  let name = document.getElementById("name").value.trim();
-  let age = document.getElementById("age").value.trim();
-  let email = document.getElementById("email").value.trim();
-  let phone = document.getElementById("phone").value.trim();
-
-  // Simple JS validation
-  if(!name || !age || !email || !phone){
-    alert("Please fill all fields!");
-    submitBtn.disabled = false;
-    return;
-  }
-
-  let answers = [];
-  selectedJobData.questions.forEach((q,i)=>{
-    let ans = document.getElementById("q"+(i+1)).value.trim();
-    if(!ans) ans = "(No answer)";
-    answers.push(ans);
-  });
-
-  let fileInput = document.getElementById("attachment");
-
-  async function finalizeSubmission(attachmentData){
-    let applicants = JSON.parse(localStorage.getItem("apps")) || [];
-    applicants.push({
-      name, age, email, phone,
-      jobTitle:selectedJobData.title,
-      cvRequired:selectedJobData.cvRequired,
-      answers, attachment:attachmentData
-    });
-    localStorage.setItem("apps", JSON.stringify(applicants));
-
-    try{
-      await emailjs.send("service_b11zlym","template_j9v1gyq",{
-        name: name,
-        message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers and any attachment provided.\n\nApplicant Info:\nName: ${name}\nAge: ${age}\nPhone: ${phone}\nEmail: ${email}\n\nBest regards,\nBionex Company Limited`,
-        to_email: email
-      });
-      console.log("Email sent successfully");
-    } catch(err){
-      console.error(err);
-      alert("Application saved but email failed to send.");
+    function loadJobs() {
+        let jobsList = document.getElementById("jobsList");
+        jobsList.innerHTML = "";
+        jobsExample.forEach((job, index) => {
+            let card = document.createElement("div");
+            card.className = "job-card";
+            card.textContent = job.title;
+            card.onclick = () => selectJob(index);
+            jobsList.appendChild(card);
+        });
     }
 
-    alert("✅ Your application has been submitted successfully!");
-    document.getElementById("applyForm").reset();
-    document.getElementById("applyForm").style.display="none";
-    submitBtn.disabled = false;
-  }
-
-  if(selectedJobData.cvRequired && fileInput.files.length===0){
-    alert("This job requires a CV!");
-    submitBtn.disabled = false;
-    return;
-  }
-
-  if(fileInput.files.length>0){
-    let reader = new FileReader();
-    reader.onload = function(){ finalizeSubmission(reader.result); }
-    reader.onerror = function(){
-      alert("Error reading your file.");
-      submitBtn.disabled = false;
+    function selectJob(index) {
+        selectedJobData = jobsExample[index];
+        document.getElementById("applyForm").style.display = "block";
+        document.getElementById("attachmentDiv").style.display = selectedJobData.cvRequired ? "block" : "none";
+        
+        let qDiv = document.getElementById("questionsDiv");
+        qDiv.innerHTML = "";
+        selectedJobData.questions.forEach((q, i) => {
+            qDiv.innerHTML += `<label>${q}</label><textarea id="q${i}" placeholder="Your answer..."></textarea>`;
+        });
+        window.scrollTo(0, document.body.scrollHeight);
     }
-    reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    finalizeSubmission("");
-  }
-});
+
+    async function handleFormSubmit() {
+        const btn = document.getElementById("submitBtn");
+        const name = document.getElementById("name").value.trim();
+        const age = document.getElementById("age").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const fileInput = document.getElementById("attachment");
+
+        if (!name || !age || !email || !phone) {
+            alert("Tafadhali jaza nafasi zote!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+
+        let answers = selectedJobData.questions.map((_, i) => document.getElementById(`q${i}`).value);
+        let fileData = "";
+
+        if (fileInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(fileInput.files[0]);
+            reader.onload = () => saveAndFinish(reader.result);
+        } else {
+            saveAndFinish("");
+        }
+
+        async function saveAndFinish(attachment) {
+            const newApp = { name, age, email, phone, job: selectedJobData.title, answers, attachment, date: new Date().toLocaleString() };
+            
+            // Save to LocalStorage
+            let apps = JSON.parse(localStorage.getItem("apps")) || [];
+            apps.push(newApp);
+            localStorage.setItem("apps", JSON.stringify(apps));
+
+            // EmailJS
+            try {
+                await emailjs.send("service_b11zlym", "template_j9v1gyq", {
+                    name: name,
+                    message: `New application for ${selectedJobData.title}`,
+                    to_email: email
+                });
+            } catch (e) { console.log("Email failed", e); }
+
+            alert("✅ Imepokelewa! Unapelekwa kwenye Dashboard sasa.");
+            window.location.href = "admin.html"; // Hapa ndipo inapo-redirect
+        }
+    }
+
+    loadJobs();
 </script>
-
 </body>
 </html>
