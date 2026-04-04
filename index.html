@@ -67,9 +67,10 @@ label { font-weight:bold; font-size:1.1em; text-align:left; display:block; margi
 <h2>Available Jobs</h2>
 <div id="jobsList"></div>
 
-<form id="applyForm">
+<form id="applyForm" novalidate>
 <h2>Application Form</h2>
 <input id="name" placeholder="Full Name" required><br>
+<input id="age" type="number" placeholder="Age" required><br>
 <input id="email" type="email" placeholder="Email" required><br>
 <input id="phone" placeholder="Phone Number" required><br>
 
@@ -88,32 +89,31 @@ label { font-weight:bold; font-size:1.1em; text-align:left; display:block; margi
 <script>
 emailjs.init("gCwHsyNsD024VEWx7");
 
-let selectedJobData=null;
+let selectedJobData = null;
 
-// Jobs with technical questions
-let jobsExample=[
+let jobsExample = [
   {
-    title:"Software Engineer",
-    cvRequired:true,
-    questions:[
+    title: "Software Engineer",
+    cvRequired: true,
+    questions: [
       "Describe your experience with web development.",
       "Which programming languages are you proficient in?",
       "Provide an example of a challenging technical problem you solved."
     ]
   },
   {
-    title:"Biomedical Technician",
-    cvRequired:true,
-    questions:[
+    title: "Biomedical Technician",
+    cvRequired: true,
+    questions: [
       "Describe your experience with biomedical devices.",
       "Which diagnostic equipment have you worked with?",
       "Explain a situation where you solved a technical issue."
     ]
   },
   {
-    title:"IT Support",
-    cvRequired:false,
-    questions:[
+    title: "IT Support",
+    cvRequired: false,
+    questions: [
       "Describe your experience in IT support.",
       "How do you troubleshoot network issues?",
       "Explain a time you resolved a critical IT problem."
@@ -121,41 +121,40 @@ let jobsExample=[
   }
 ];
 
-// Store example jobs in localStorage if empty
 if(!localStorage.getItem("jobs")){
-  localStorage.setItem("jobs",JSON.stringify(jobsExample));
+  localStorage.setItem("jobs", JSON.stringify(jobsExample));
 }
 
 function loadJobs(){
-  let jobs=JSON.parse(localStorage.getItem("jobs"))||[];
-  let jobsList=document.getElementById("jobsList");
-  jobsList.innerHTML="";
-  jobs.forEach((job,index)=>{
-    let card=document.createElement("div");
-    card.className="job-card";
-    card.textContent=job.title; // Only job title
-    card.onclick=()=>selectJob(index);
+  let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+  let jobsList = document.getElementById("jobsList");
+  jobsList.innerHTML = "";
+  jobs.forEach((job, index)=>{
+    let card = document.createElement("div");
+    card.className = "job-card";
+    card.textContent = job.title;
+    card.onclick = ()=> selectJob(index);
     jobsList.appendChild(card);
   });
 }
 
 function selectJob(index){
-  let jobs=JSON.parse(localStorage.getItem("jobs"))||[];
-  selectedJobData=jobs[index];
-  document.getElementById("applyForm").style.display="block";
+  let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+  selectedJobData = jobs[index];
+  document.getElementById("applyForm").style.display = "block";
 
-  // CV field visible only if required
-  document.getElementById("attachmentDiv").style.display=selectedJobData.cvRequired?"block":"none";
+  document.getElementById("attachmentDiv").style.display = selectedJobData.cvRequired ? "block" : "none";
 
-  // Load technical questions with label + placeholder
-  let questionsDiv=document.getElementById("questionsDiv");
-  questionsDiv.innerHTML="";
+  let questionsDiv = document.getElementById("questionsDiv");
+  questionsDiv.innerHTML = "";
   selectedJobData.questions.forEach((q,i)=>{
     let label = document.createElement("label");
     label.textContent = `Question ${i+1}: ${q}`;
     questionsDiv.appendChild(label);
+
     let textarea = document.createElement("textarea");
     textarea.id = "q"+(i+1);
+    textarea.name = "q"+(i+1);
     textarea.placeholder = "Type your answer here...";
     textarea.required = true;
     questionsDiv.appendChild(textarea);
@@ -164,56 +163,71 @@ function selectJob(index){
 
 loadJobs();
 
-document.getElementById("applyForm").addEventListener("submit",function(e){
+document.getElementById("applyForm").addEventListener("submit", function(e){
   e.preventDefault();
-  let name=document.getElementById("name").value;
-  let email=document.getElementById("email").value;
-  let phone=document.getElementById("phone").value;
-  
-  // Collect answers dynamically
-  let answers=[];
+  let submitBtn = this.querySelector("button");
+  submitBtn.disabled = true;
+
+  let name = document.getElementById("name").value.trim();
+  let age = document.getElementById("age").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let phone = document.getElementById("phone").value.trim();
+
+  // Collect answers
+  let answers = [];
   selectedJobData.questions.forEach((q,i)=>{
-    let ans=document.getElementById("q"+(i+1)).value;
+    let ans = document.getElementById("q"+(i+1)).value.trim();
     answers.push(ans);
   });
 
-  let fileInput=document.getElementById("attachment");
+  let fileInput = document.getElementById("attachment");
+
+  function finalizeSubmission(attachmentData){
+    let applicants = JSON.parse(localStorage.getItem("apps")) || [];
+    applicants.push({
+      name, age, email, phone,
+      jobTitle: selectedJobData.title,
+      cvRequired: selectedJobData.cvRequired,
+      answers, attachment: attachmentData
+    });
+    localStorage.setItem("apps", JSON.stringify(applicants));
+
+    alert("✅ Your application has been submitted successfully!\n\nThank you for applying to Bionex Company Limited. You will receive a notification via email regarding your application status.");
+
+    // Send email
+    emailjs.send("service_b11zlym","template_j9v1gyq",{
+      name: name,
+      message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers to the technical questions and any attachment provided.\n\nApplicant Info:\nName: ${name}\nAge: ${age}\nPhone: ${phone}\nEmail: ${email}\n\nOur team will carefully review your application and contact you with further updates.\n\nBest regards,\nBionex Company Limited`,
+      to_email: email
+    }).then(()=> console.log("Email sent"))
+      .catch(err => {
+        console.error("Email failed", err);
+        alert("Application submitted but email failed to send.");
+      });
+
+    document.getElementById("applyForm").reset();
+    document.getElementById("applyForm").style.display = "none";
+    submitBtn.disabled = false;
+  }
+
   if(selectedJobData.cvRequired && fileInput.files.length===0){
-    alert("This job requires a CV!"); return;
+    alert("This job requires a CV!");
+    submitBtn.disabled = false;
+    return;
   }
 
   if(fileInput.files.length>0){
-    let reader=new FileReader();
-    reader.onload=function(){ saveApplication(name,email,phone,answers,reader.result);}
+    let reader = new FileReader();
+    reader.onload = function(){ finalizeSubmission(reader.result); }
+    reader.onerror = function(){
+      alert("Error reading your file. Please try again.");
+      submitBtn.disabled = false;
+    }
     reader.readAsDataURL(fileInput.files[0]);
-  }else{
-    saveApplication(name,email,phone,answers,"");
+  } else {
+    finalizeSubmission("");
   }
 });
-
-function saveApplication(name,email,phone,answers,attachment){
-  let applicants=JSON.parse(localStorage.getItem("apps"))||[];
-  applicants.push({
-    name,email,phone,
-    jobTitle:selectedJobData.title,
-    cvRequired:selectedJobData.cvRequired,
-    answers,
-    attachment
-  });
-  localStorage.setItem("apps",JSON.stringify(applicants));
-
-  alert("✅ Your application has been submitted successfully!\n\nThank you for applying to Bionex Company Limited. We value your interest and will review your application carefully. You will receive a detailed notification soon via email regarding your application status.");
-
-  // Send email
-  emailjs.send("service_b11zlym","template_j9v1gyq",{
-    name:name,
-    message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application along with your answers to the technical questions and any attachment provided.\n\nOur team will carefully review your application and contact you with further updates.\n\nBest regards,\nBionex Company Limited`,
-    to_email:email
-  }).then(()=>console.log("Email sent")).catch(()=>console.log("Email failed"));
-
-  document.getElementById("applyForm").reset();
-  document.getElementById("applyForm").style.display="none";
-}
 </script>
 </body>
 </html>
