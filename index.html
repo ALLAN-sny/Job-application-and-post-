@@ -5,10 +5,12 @@
 </head>
 <body style="font-family: Arial; text-align:center;">
 
-<h2>🔐 Admin Login</h2>
+<h2>🔐 Admin Dashboard</h2>
 
-<input type="password" id="pass" placeholder="Enter Password">
-<button onclick="login()">Login</button>
+<div id="loginBox">
+  <input type="password" id="pass" placeholder="Enter Password">
+  <button onclick="login()">Login</button>
+</div>
 
 <div id="data"></div>
 
@@ -17,27 +19,44 @@
 
 <script>
 
-// 🔥 EMAILJS INIT (PUBLIC KEY YAKO)
+// 🔑 INIT EMAILJS
 (function(){
-  emailjs.init("gCwHsyNsD024VEWx7");
+  emailjs.init("gCwHsyNsD024VEWx7"); // Public Key yako
 })();
 
 // 🔐 PASSWORD YA ADMIN
-const ADMIN_PASSWORD = "12345";
+const ADMIN_PASSWORD = "admin123";
+
+// Angalia kama tayari ume-login
+if(localStorage.getItem("isAdmin") === "true"){
+  showDashboard();
+}
 
 // LOGIN FUNCTION
 function login(){
   let password = document.getElementById("pass").value;
 
-  if(password !== ADMIN_PASSWORD){
-    alert("❌ Wrong Password");
+  if(password === ADMIN_PASSWORD){
+    localStorage.setItem("isAdmin", "true");
+    showDashboard();
+  } else {
+    alert("❌ Wrong password");
+  }
+}
+
+// SHOW DASHBOARD
+function showDashboard(){
+  document.getElementById("loginBox").style.display = "none";
+
+  let applicants = JSON.parse(localStorage.getItem("apps")) || [];
+  let container = document.getElementById("data");
+
+  if(applicants.length === 0){
+    container.innerHTML = "<p>❗ No applicants yet</p>";
     return;
   }
 
-  let applicants = JSON.parse(localStorage.getItem("apps")) || [];
-
-  let container = document.getElementById("data");
-  container.innerHTML = "<h3>📋 Applicants List</h3>";
+  container.innerHTML = "<h3>Applicants List</h3>";
 
   applicants.forEach((a)=>{
     container.innerHTML += `
@@ -55,29 +74,27 @@ function login(){
   });
 }
 
-// 📩 SEND EMAIL FUNCTION
+// SEND EMAIL FUNCTION
 function decide(name, email, status){
 
-  let message = "";
-
-  if(status === "accepted"){
-    message = "🎉 Congratulations! You have been selected for the job.";
-  } else {
-    message = "😔 Sorry, you were not selected this time.";
-  }
+  let message = status === "accepted"
+    ? "🎉 Congratulations! You have been selected."
+    : "😔 Sorry, you were not selected.";
 
   emailjs.send("service_b11zlym", "template_j9v1gyq", {
     name: name,
     message: message,
     to_email: email
   })
-  .then(function(response) {
-    alert("✅ Email sent successfully!");
-  }, function(error) {
-    alert("❌ Failed to send email");
+  .then(()=>{
+    alert("✅ Email sent");
+  })
+  .catch(()=>{
+    alert("❌ Failed");
   });
 
 }
+
 </script>
 
 </body>
