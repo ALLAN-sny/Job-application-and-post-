@@ -1,100 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Dashboard</title>
+  <title>Apply Job</title>
 </head>
 <body style="font-family: Arial; text-align:center;">
 
-<h2>🔐 Admin Dashboard</h2>
+<h2>Available Jobs</h2>
+<div id="jobsList"></div>
 
-<div id="loginBox">
-  <input type="password" id="pass" placeholder="Enter Password">
-  <button onclick="login()">Login</button>
-</div>
+<h2>Apply for a Job</h2>
+<input id="name" placeholder="Your Name"><br><br>
+<input id="email" placeholder="Your Email"><br><br>
+<input id="phone" placeholder="Phone Number"><br><br>
+<select id="jobSelect"></select><br><br>
 
-<div id="data"></div>
-
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<button onclick="apply()">Submit Application</button>
 
 <script>
+function loadJobs(){
+  let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+  let jobsList = document.getElementById("jobsList");
+  let jobSelect = document.getElementById("jobSelect");
 
-// 🔑 INIT EMAILJS
-(function(){
-  emailjs.init("gCwHsyNsD024VEWx7"); // Public Key yako
-})();
+  jobsList.innerHTML = "";
+  jobSelect.innerHTML = "";
 
-// 🔐 PASSWORD YA ADMIN
-const ADMIN_PASSWORD = "admin123";
-
-// Angalia kama tayari ume-login
-if(localStorage.getItem("isAdmin") === "true"){
-  showDashboard();
-}
-
-// LOGIN FUNCTION
-function login(){
-  let password = document.getElementById("pass").value;
-
-  if(password === ADMIN_PASSWORD){
-    localStorage.setItem("isAdmin", "true");
-    showDashboard();
-  } else {
-    alert("❌ Wrong password");
-  }
-}
-
-// SHOW DASHBOARD
-function showDashboard(){
-  document.getElementById("loginBox").style.display = "none";
-
-  let applicants = JSON.parse(localStorage.getItem("apps")) || [];
-  let container = document.getElementById("data");
-
-  if(applicants.length === 0){
-    container.innerHTML = "<p>❗ No applicants yet</p>";
+  if(jobs.length === 0){
+    jobsList.innerHTML = "<p>❗ No jobs available yet</p>";
+    jobSelect.innerHTML = "<option disabled selected>No jobs</option>";
     return;
   }
 
-  container.innerHTML = "<h3>Applicants List</h3>";
-
-  applicants.forEach((a)=>{
-    container.innerHTML += `
-      <p>
-        <b>${a.name}</b><br>
-        ${a.email}<br>
-        ${a.phone}
-      </p>
-
-      <button onclick="decide('${a.name}','${a.email}','accepted')">✅ Accept</button>
-      <button onclick="decide('${a.name}','${a.email}','rejected')">❌ Reject</button>
-
-      <hr>
-    `;
+  jobs.forEach((job, index)=>{
+    jobsList.innerHTML += `<p><b>${job.title}</b><br>${job.criteria}</p>`;
+    jobSelect.innerHTML += `<option value="${index}">${job.title}</option>`;
   });
 }
 
-// SEND EMAIL FUNCTION
-function decide(name, email, status){
+// Call loadJobs on page load
+loadJobs();
 
-  let message = status === "accepted"
-    ? "🎉 Congratulations! You have been selected."
-    : "😔 Sorry, you were not selected.";
+function apply(){
+  let applicants = JSON.parse(localStorage.getItem("apps")) || [];
+  let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
 
-  emailjs.send("service_b11zlym", "template_j9v1gyq", {
-    name: name,
-    message: message,
-    to_email: email
-  })
-  .then(()=>{
-    alert("✅ Email sent");
-  })
-  .catch(()=>{
-    alert("❌ Failed");
+  let jobIndex = document.getElementById("jobSelect").value;
+  if(jobIndex === "" || !jobs[jobIndex]){
+    alert("❌ Please select a valid job");
+    return;
+  }
+
+  applicants.push({
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    job: jobs[jobIndex].title
   });
 
+  localStorage.setItem("apps", JSON.stringify(applicants));
+  alert("✅ Application Submitted Successfully!");
 }
-
 </script>
 
 </body>
