@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Job Application</title>
+<title>Bionex Careers</title>
 <style>
 body {
   font-family: 'Arial', sans-serif;
@@ -9,76 +9,89 @@ body {
   color: #222;
   text-align:center;
 }
-h1 { color: #1a237e; font-size: 2.5em; margin-bottom: 0.2em; }
-h2 { color: #3949ab; font-size:2em; margin-top:0.5em; }
+h1 { color:#1a237e; font-size:2.5em; margin-bottom:0.2em; }
+h2 { color:#3949ab; font-size:2em; margin-top:0.5em; }
 .job-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 15px auto;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-  text-align: left;
+  background:#fff;
+  border-radius:12px;
+  padding:20px;
+  margin:15px auto;
+  width:90%;
+  max-width:500px;
+  box-shadow:0 5px 12px rgba(0,0,0,0.15);
+  text-align:left;
+  cursor:pointer;
+  transition:.3s;
 }
+.job-card:hover { background:#e3eaff; }
 input, select, textarea, button {
-  padding: 10px;
-  margin: 8px 0;
-  width: 90%;
-  max-width: 400px;
-  font-size: 1.1em;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  padding:10px;
+  margin:8px 0;
+  width:90%;
+  max-width:400px;
+  font-size:1.1em;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 button {
-  background: #1a237e;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  transition: 0.3s;
+  background:#1a237e;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  border:none;
+  transition:0.3s;
 }
-button:hover { background: #3949ab; }
-label { font-weight: bold; font-size: 1.1em; }
+button:hover { background:#3949ab; }
+label { font-weight:bold; font-size:1.1em; }
+#applyForm { display:none; text-align:center; }
 </style>
 </head>
 <body>
 
-<h1>Welcome to MyBrand Careers</h1>
-<p style="font-size:1.2em;">We value talent. Please fill out the application below carefully.</p>
+<h1>Welcome to Bionex Company Limited Careers</h1>
+<p style="font-size:1.2em;">Please select a job below to start your application.</p>
 
 <h2>Available Jobs</h2>
 <div id="jobsList"></div>
 
-<h2>Apply for a Job</h2>
 <form id="applyForm">
+<h2>Application Form</h2>
 <input id="name" placeholder="Full Name" required><br>
 <input id="email" type="email" placeholder="Email" required><br>
 <input id="phone" placeholder="Phone Number" required><br>
-<select id="jobSelect" required></select><br>
-<textarea id="q1" placeholder="Why do you want this job?" required></textarea><br>
-<textarea id="q2" placeholder="Technical question / skills" required></textarea><br>
+<div id="attachmentDiv">
 <input type="file" id="attachment"><br>
+</div>
+<textarea id="q1" placeholder="Why do you want this job?" required></textarea><br>
+<textarea id="q2" placeholder="Technical / Skills question" required></textarea><br>
 <button type="submit">Submit Application</button>
 </form>
 
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
+emailjs.init("gCwHsyNsD024VEWx7");
+
+let selectedJobData=null;
+
 function loadJobs(){
   let jobs=JSON.parse(localStorage.getItem("jobs"))||[];
   let jobsList=document.getElementById("jobsList");
-  let jobSelect=document.getElementById("jobSelect");
   jobsList.innerHTML="";
-  jobSelect.innerHTML="";
-  if(jobs.length===0){ jobsList.innerHTML="<p>No jobs available yet</p>"; jobSelect.innerHTML="<option disabled selected>No jobs</option>"; return;}
+  if(jobs.length===0){ jobsList.innerHTML="<p>No jobs available yet</p>"; return;}
   jobs.forEach((job,index)=>{
-    jobsList.innerHTML+=`
-      <div class="job-card">
-        <b>${job.title}</b><br>
-        ${job.criteria}<br>
-        <small>CV Required: ${job.cvRequired?"Yes":"No"}</small>
-      </div>`;
-    jobSelect.innerHTML+=`<option value="${index}">${job.title}</option>`;
+    let card=document.createElement("div");
+    card.className="job-card";
+    card.innerHTML=`<b>${job.title}</b><br>${job.criteria}<br><small>CV Required: ${job.cvRequired?"Yes":"No"}</small>`;
+    card.onclick=()=>selectJob(index);
+    jobsList.appendChild(card);
   });
+}
+
+function selectJob(index){
+  let jobs=JSON.parse(localStorage.getItem("jobs"))||[];
+  selectedJobData=jobs[index];
+  document.getElementById("applyForm").style.display="block";
+  document.getElementById("attachmentDiv").style.display=selectedJobData.cvRequired?"block":"none";
 }
 
 loadJobs();
@@ -88,36 +101,46 @@ document.getElementById("applyForm").addEventListener("submit",function(e){
   let name=document.getElementById("name").value;
   let email=document.getElementById("email").value;
   let phone=document.getElementById("phone").value;
-  let jobIndex=document.getElementById("jobSelect").value;
   let q1=document.getElementById("q1").value;
   let q2=document.getElementById("q2").value;
-  if(jobIndex===""||jobIndex===null){ alert("Select a job"); return; }
-  let jobs=JSON.parse(localStorage.getItem("jobs"))||[];
-  let selectedJob=jobs[jobIndex];
   let fileInput=document.getElementById("attachment");
   let attachmentData="";
+  
+  if(selectedJobData.cvRequired && fileInput.files.length===0){
+    alert("This job requires a CV!"); return;
+  }
+  
   if(fileInput.files.length>0){
     let reader=new FileReader();
-    reader.onload=function(){ saveApplication(name,email,phone,selectedJob,q1,q2,reader.result);}
+    reader.onload=function(){ saveApplication(name,email,phone,q1,q2,reader.result);}
     reader.readAsDataURL(fileInput.files[0]);
   }else{
-    saveApplication(name,email,phone,selectedJob,q1,q2,"");
+    saveApplication(name,email,phone,q1,q2,"");
   }
 });
 
-function saveApplication(name,email,phone,job,q1,q2,attachment){
+function saveApplication(name,email,phone,q1,q2,attachment){
   let applicants=JSON.parse(localStorage.getItem("apps"))||[];
   applicants.push({
     name,email,phone,
-    jobTitle:job.title,
-    criteria:job.criteria,
-    cvRequired:job.cvRequired,
+    jobTitle:selectedJobData.title,
+    criteria:selectedJobData.criteria,
+    cvRequired:selectedJobData.cvRequired,
     q1,q2,
     attachment
   });
   localStorage.setItem("apps",JSON.stringify(applicants));
-  alert("✅ Application Submitted!");
+  alert("✅ Your application has been submitted successfully!\n\nThank you for applying to Bionex Company Limited. We value your interest and will review your application carefully. You will receive a notification soon via email regarding the status of your application.");
+  
+  // send email
+  emailjs.send("service_b11zlym","template_j9v1gyq",{
+    name:name,
+    message:`Dear ${name},\n\nThank you for applying to Bionex Company Limited for the position of ${selectedJobData.title}.\n\nWe have received your application with your details and any attachment you provided.\n\nOur team will review your application carefully, and we will get back to you with updates.\n\nBest regards,\nBionex Company Limited`,
+    to_email:email
+  }).then(()=>console.log("Email sent")).catch(()=>console.log("Email failed"));
+
   document.getElementById("applyForm").reset();
+  document.getElementById("applyForm").style.display="none";
 }
 </script>
 </body>
