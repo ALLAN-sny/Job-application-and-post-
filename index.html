@@ -67,6 +67,7 @@ const jobsContainer = document.getElementById("jobsContainer");
 const applyForm = document.getElementById("applyForm");
 let selectedJob = null;
 
+// Load jobs
 async function loadJobs(){
     jobsContainer.innerHTML="";
     const snapshot = await getDocs(collection(db,"jobs"));
@@ -84,6 +85,7 @@ async function loadJobs(){
 }
 loadJobs();
 
+// Select job
 function selectJob(jobId, job){
     selectedJob={id:jobId,...job};
     jobsContainer.style.display="none";
@@ -97,11 +99,13 @@ function selectJob(jobId, job){
     });
 }
 
+// Back
 function backToJobs(){
     applyForm.style.display="none";
     jobsContainer.style.display="block";
 }
 
+// Submit Application
 async function submitApplication(){
     if(!selectedJob) return;
     const answers=[];
