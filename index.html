@@ -8,33 +8,38 @@
 :root { --primary:#1a237e; --bg:#f0f4f8; }
 body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);}
 header{background:var(--primary);color:white;padding:30px;text-align:center;}
+header small{display:block;}
 .container{max-width:700px;margin:20px auto;padding:20px;}
 .job-card{background:white;padding:12px;margin-bottom:10px;border-radius:8px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
 .job-card:hover{background:#e8eaf6;}
 input,textarea,button{width:100%;padding:10px;margin:5px 0;border-radius:6px;border:1px solid #ddd;}
 button{cursor:pointer;font-weight:bold;background:var(--primary);color:white;}
 #applyForm{display:none;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.back-btn{background:#666;color:white;}
 </style>
 </head>
 <body>
 <header>
-<h1>Bionex Careers Portal</h1>
+<h1>Bionex Company Limited</h1>
+<p>Founder: <strong>Eng. Allan</strong></p>
+<p><small>Biomedical Engineer (MUHAS) & Developer</small></p>
 </header>
 <div class="container">
 <div id="jobsContainer"></div>
+
 <div id="applyForm">
 <h3 id="jobTitleSelected"></h3>
 <input type="text" id="applicantName" placeholder="Full Name">
 <input type="number" id="applicantAge" placeholder="Age">
 <input type="email" id="applicantEmail" placeholder="Email">
-<input type="tel" id="applicantPhone" placeholder="Phone">
+<input type="tel" id="applicantPhone" placeholder="Phone Number">
 <div id="cvArea" style="display:none;">
-<label>Upload CV</label>
+<label>Upload CV/Resume</label>
 <input type="file" id="cvFile">
 </div>
 <div id="questionsArea"></div>
 <button onclick="submitApplication()">Submit Application</button>
-<button onclick="backToJobs()" style="background:#666;color:white;">Back to Jobs</button>
+<button class="back-btn" onclick="backToJobs()">Back to Jobs</button>
 </div>
 </div>
 
@@ -43,6 +48,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebas
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-storage.js";
 
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyA5TJQ-nA9TuLsJJ9PXkYv9c0m7Q9_Dw64",
   authDomain: "bionex-job-portal-d9916.firebaseapp.com",
@@ -64,15 +70,19 @@ let selectedJob = null;
 async function loadJobs(){
     jobsContainer.innerHTML="";
     const snapshot = await getDocs(collection(db,"jobs"));
+    if(snapshot.empty){
+        jobsContainer.innerHTML = "<p>No active jobs at the moment.</p>";
+    }
     snapshot.forEach(docSnap=>{
-        const job=docSnap.data();
+        const job = docSnap.data();
         const div = document.createElement("div");
-        div.textContent = job.title;
         div.className="job-card";
+        div.textContent = job.title;
         div.onclick = ()=>selectJob(docSnap.id, job);
         jobsContainer.appendChild(div);
     });
 }
+loadJobs();
 
 function selectJob(jobId, job){
     selectedJob={id:jobId,...job};
@@ -98,6 +108,7 @@ async function submitApplication(){
     selectedJob.questions.split(',').forEach((q,i)=>{
         if(q.trim()) answers.push({question:q, answer:document.getElementById(`ans_${i}`).value});
     });
+
     let cvUrl="";
     const cvFile = document.getElementById("cvFile").files[0];
     if(cvFile){
@@ -105,6 +116,7 @@ async function submitApplication(){
         await uploadBytes(storageRef, cvFile);
         cvUrl = await getDownloadURL(storageRef);
     }
+
     await addDoc(collection(db,"applications"),{
         jobTitle:selectedJob.title,
         name:document.getElementById("applicantName").value,
@@ -115,11 +127,10 @@ async function submitApplication(){
         cvUrl,
         status:"Pending"
     });
+
     alert("Application submitted!");
     backToJobs();
 }
-
-loadJobs();
 </script>
 </body>
 </html>
