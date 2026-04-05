@@ -1,113 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionex Careers | Apply</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #1a237e; --bg: #f8f9fa; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; }
-        .container { max-width: 700px; margin: 20px auto; padding: 20px; }
-        .job-item { background: white; padding: 20px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; border-left: 5px solid #3949ab; }
-        .job-item:hover { transform: translateX(10px); background: #e8eaf6; }
-        .form-card { display: none; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .back-btn { background: #666; margin-top: 10px; }
-    </style>
+<meta charset="UTF-8">
+<title>Bionex Careers</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root { --primary:#1a237e; --bg:#f0f4f8; }
+body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);}
+header{background:var(--primary);color:white;padding:30px;text-align:center;}
+.container{max-width:700px;margin:20px auto;padding:20px;}
+.job-card{background:white;padding:12px;margin-bottom:10px;border-radius:8px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+.job-card:hover{background:#e8eaf6;}
+input,textarea,button{width:100%;padding:10px;margin:5px 0;border-radius:6px;border:1px solid #ddd;}
+button{cursor:pointer;font-weight:bold;background:var(--primary);color:white;}
+#applyForm{display:none;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+</style>
 </head>
 <body>
-
 <header>
-    <h1>Bionex Company Limited</h1>
-    <p>Founder: <strong>Eng. Allan</strong></p>
-    <p><small>Biomedical Engineer (MUHAS) & Developer</small></p>
+<h1>Bionex Careers Portal</h1>
 </header>
-
 <div class="container">
-    <div id="jobListSection">
-        <h2 style="color: var(--primary);">Available Vacancies</h2>
-        <div id="jobsContainer"></div>
-    </div>
-
-    <div id="applySection" class="form-card">
-        <h2 id="selectedJobTitle">Apply Now</h2>
-        <input type="text" id="applicantName" placeholder="Full Name" required>
-        <input type="number" id="applicantAge" placeholder="Age" required>
-        <input type="email" id="applicantEmail" placeholder="Email Address" required>
-        <input type="tel" id="applicantPhone" placeholder="Phone Number" required>
-        
-        <div id="attachmentArea" style="display:none;">
-            <label><strong>Upload CV/Resume (Required):</strong></label>
-            <input type="file" id="cvFile">
-        </div>
-
-        <div id="interviewQuestions"></div>
-
-        <button onclick="submitApplication()">Submit Application</button>
-        <button class="back-btn" onclick="location.reload()">Back to Jobs</button>
-    </div>
+<div id="jobsContainer"></div>
+<div id="applyForm">
+<h3 id="jobTitleSelected"></h3>
+<input type="text" id="applicantName" placeholder="Full Name">
+<input type="number" id="applicantAge" placeholder="Age">
+<input type="email" id="applicantEmail" placeholder="Email">
+<input type="tel" id="applicantPhone" placeholder="Phone">
+<div id="cvArea" style="display:none;">
+<label>Upload CV</label>
+<input type="file" id="cvFile">
+</div>
+<div id="questionsArea"></div>
+<button onclick="submitApplication()">Submit Application</button>
+<button onclick="backToJobs()" style="background:#666;color:white;">Back to Jobs</button>
+</div>
 </div>
 
-<script>
-    const jobs = JSON.parse(localStorage.getItem("bionex_posted_jobs")) || [];
-    const container = document.getElementById("jobsContainer");
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-storage.js";
 
-    function loadJobs() {
-        if(jobs.length === 0) container.innerHTML = "<p>No active jobs at the moment.</p>";
-        jobs.forEach((job, index) => {
-            container.innerHTML += `
-                <div class="job-item" onclick="showForm(${index})">
-                    <strong>${job.title}</strong>
-                </div>`;
-        });
+const firebaseConfig = {
+  apiKey: "AIzaSyA5TJQ-nA9TuLsJJ9PXkYv9c0m7Q9_Dw64",
+  authDomain: "bionex-job-portal-d9916.firebaseapp.com",
+  projectId: "bionex-job-portal-d9916",
+  storageBucket: "bionex-job-portal-d9916.appspot.com",
+  messagingSenderId: "98574190987",
+  appId: "1:98574190987:web:ceed55ea553cb05604478e",
+  measurementId: "G-9WZ1Y72F38"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+const jobsContainer = document.getElementById("jobsContainer");
+const applyForm = document.getElementById("applyForm");
+let selectedJob = null;
+
+async function loadJobs(){
+    jobsContainer.innerHTML="";
+    const snapshot = await getDocs(collection(db,"jobs"));
+    snapshot.forEach(docSnap=>{
+        const job=docSnap.data();
+        const div = document.createElement("div");
+        div.textContent = job.title;
+        div.className="job-card";
+        div.onclick = ()=>selectJob(docSnap.id, job);
+        jobsContainer.appendChild(div);
+    });
+}
+
+function selectJob(jobId, job){
+    selectedJob={id:jobId,...job};
+    jobsContainer.style.display="none";
+    applyForm.style.display="block";
+    document.getElementById("jobTitleSelected").textContent=job.title;
+    document.getElementById("cvArea").style.display=job.requireCV?"block":"none";
+    const questionsDiv=document.getElementById("questionsArea");
+    questionsDiv.innerHTML="";
+    job.questions.split(',').forEach((q,i)=>{
+        if(q.trim()) questionsDiv.innerHTML+=`<label>${q}</label><textarea id="ans_${i}" placeholder="Answer..."></textarea>`;
+    });
+}
+
+function backToJobs(){
+    applyForm.style.display="none";
+    jobsContainer.style.display="block";
+}
+
+async function submitApplication(){
+    if(!selectedJob) return;
+    const answers=[];
+    selectedJob.questions.split(',').forEach((q,i)=>{
+        if(q.trim()) answers.push({question:q, answer:document.getElementById(`ans_${i}`).value});
+    });
+    let cvUrl="";
+    const cvFile = document.getElementById("cvFile").files[0];
+    if(cvFile){
+        const storageRef = ref(storage, `cvs/${Date.now()}_${cvFile.name}`);
+        await uploadBytes(storageRef, cvFile);
+        cvUrl = await getDownloadURL(storageRef);
     }
+    await addDoc(collection(db,"applications"),{
+        jobTitle:selectedJob.title,
+        name:document.getElementById("applicantName").value,
+        email:document.getElementById("applicantEmail").value,
+        phone:document.getElementById("applicantPhone").value,
+        age:document.getElementById("applicantAge").value,
+        answers,
+        cvUrl,
+        status:"Pending"
+    });
+    alert("Application submitted!");
+    backToJobs();
+}
 
-    let activeJobIndex = null;
-    function showForm(index) {
-        activeJobIndex = index;
-        const job = jobs[index];
-        document.getElementById("jobListSection").style.display = "none";
-        document.getElementById("applySection").style.display = "block";
-        document.getElementById("selectedJobTitle").innerText = "Applying for: " + job.title;
-        
-        if(job.attachmentRequired) document.getElementById("attachmentArea").style.display = "block";
-
-        const qArea = document.getElementById("interviewQuestions");
-        qArea.innerHTML = "<h3>Interview Questions</h3>";
-        job.questions.split(',').forEach((q, i) => {
-            if(q.trim()) qArea.innerHTML += `<label>${q}</label><textarea id="ans_${i}" placeholder="Your answer..."></textarea>`;
-        });
-    }
-
-    function submitApplication() {
-        const job = jobs[activeJobIndex];
-        const answers = [];
-        job.questions.split(',').forEach((q, i) => {
-            if(q.trim()) answers.push({ question: q, answer: document.getElementById(`ans_${i}`).value });
-        });
-
-        const application = {
-            id: Date.now(),
-            jobTitle: job.title,
-            name: document.getElementById("applicantName").value,
-            email: document.getElementById("applicantEmail").value,
-            phone: document.getElementById("applicantPhone").value,
-            age: document.getElementById("applicantAge").value,
-            answers: answers,
-            status: "Pending"
-        };
-
-        let allApps = JSON.parse(localStorage.getItem("bionex_submissions")) || [];
-        allApps.push(application);
-        localStorage.setItem("bionex_submissions", JSON.stringify(allApps));
-
-        alert("Application sent successfully!");
-        location.reload();
-    }
-    loadJobs();
+loadJobs();
 </script>
 </body>
 </html>
