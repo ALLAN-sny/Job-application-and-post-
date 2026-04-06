@@ -3,114 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionex | Career Portal</title>
-    
+    <title>Bionex Careers | Apply Now</title>
     <style>
-        :root { 
-            --primary: #1a237e; 
-            --secondary: #ffca28; 
-            --bg: #f4f7f9; 
-            --white: #ffffff;
-        }
+        :root { --primary: #1a237e; --secondary: #ffca28; --white: #ffffff; --text: #333; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; color: var(--text); }
 
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .apply-card {
-            background: var(--white);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            border-top: 8px solid var(--primary);
-        }
-
-        .logo-area { text-align: center; margin-bottom: 30px; }
-        .logo-area h1 { color: var(--primary); margin: 0; letter-spacing: 2px; }
-        .logo-area span { color: var(--secondary); font-weight: bold; }
-
-        .welcome-text { text-align: center; color: #666; margin-bottom: 30px; font-size: 0.95rem; }
-
-        label { display: block; margin-bottom: 8px; color: var(--primary); font-weight: 600; font-size: 0.9rem; }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            box-sizing: border-box;
-            transition: 0.3s;
-            font-size: 1rem;
-        }
-
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
-
-        .submit-btn {
-            background: var(--primary);
+        /* Founder Header */
+        .founder-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d144d 100%);
             color: white;
-            border: none;
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.4s;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--secondary);
         }
+        .founder-header h1 { margin: 10px 0; letter-spacing: 2px; font-size: 2.5rem; }
+        .founder-header p { font-style: italic; opacity: 0.9; margin: 0; }
 
-        .submit-btn:hover { background: #0d144d; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3); }
-        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .container { max-width: 800px; margin: -30px auto 50px auto; padding: 20px; }
+        
+        .card { background: var(--white); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-        #msg { text-align: center; margin-top: 15px; font-weight: bold; }
+        /* Job List Styling */
+        .job-card {
+            border-left: 5px solid var(--secondary);
+            background: #f9f9fb;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .job-card:hover { transform: scale(1.02); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .btn-view { background: var(--primary); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-size: 0.9rem; }
+
+        /* Form Styling */
+        .apply-form { display: none; } /* Hidden until a job is clicked */
+        label { display: block; margin-top: 15px; font-weight: bold; color: var(--primary); }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        
+        .submit-btn {
+            background: var(--primary); color: white; border: none; width: 100%; padding: 15px; 
+            margin-top: 25px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+        }
+        .submit-btn:hover { background: var(--secondary); color: var(--primary); }
+        
+        .back-btn { color: var(--primary); cursor: pointer; display: inline-block; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="apply-card">
-    <div class="logo-area">
-        <h1>BIONEX <span>CAREERS</span></h1>
-    </div>
-    
-    <p class="welcome-text">
-        Welcome to Bionex recruitment portal. Please provide your academic and professional details accurately.
+<div class="founder-header">
+    <p>Message from the Founder</p>
+    <h1>BIONEX COMPANY LIMITED</h1>
+    <h3 style="color: var(--secondary); margin-top: 5px;">Eng. Allan - Founder & CEO</h3>
+    <p style="max-width: 600px; margin: 15px auto auto auto; font-size: 0.9rem;">
+        "Innovating Healthcare through Biomedical Excellence. Join our team of experts and let's shape the future of medical technology together."
     </p>
+</div>
 
-    <form id="applicantForm">
-        <label>Full Name</label>
-        <input type="text" name="Jina" placeholder="e.g. John Doe" required>
-
-        <label>Email Address</label>
-        <input type="email" name="Email" placeholder="e.g. john@example.com" required>
-
-        <label>Select Position</label>
-        <select name="Nafasi" id="jobDropdown" required>
-            <option value="">Loading available jobs...</option>
-        </select>
-
-        <label>Short Biography / Skills</label>
-        <textarea name="Bio" rows="4" placeholder="Briefly describe your expertise..."></textarea>
-
-        <button type="submit" id="submitBtn" class="submit-btn">SUBMIT APPLICATION</button>
-    </form>
+<div class="container">
     
-    <div id="msg"></div>
+    <div id="jobListSection" class="card">
+        <h2 style="color: var(--primary); text-align: center;">Available Vacancies</h2>
+        <hr style="opacity: 0.2; margin-bottom: 20px;">
+        <div id="displayJobs">Fetching positions...</div>
+    </div>
+
+    <div id="applyFormSection" class="card apply-form">
+        <div class="back-btn" onclick="showJobs()">← Back to Jobs</div>
+        <h2 id="selectedJobTitle" style="color: var(--primary); margin: 0;"></h2>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Please fill in all details accurately.</p>
+
+        <form id="mainApplicationForm">
+            <input type="hidden" name="Nafasi" id="hiddenJobTitle">
+
+            <label>Full Name</label>
+            <input type="text" name="Jina" placeholder="Enter full name" required>
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label>Age</label>
+                    <input type="number" name="Age" placeholder="Your age" required>
+                </div>
+                <div style="flex: 2;">
+                    <label>Phone Number</label>
+                    <input type="tel" name="Phone" placeholder="e.g. 0712XXXXXX" required>
+                </div>
+            </div>
+
+            <label>Email Address</label>
+            <input type="email" name="Email" placeholder="e.g. example@gmail.com" required>
+
+            <div id="dynamicQuestions"></div>
+
+            <button type="submit" id="submitBtn" class="submit-btn">SUBMIT APPLICATION</button>
+        </form>
+        <div id="responseMsg" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+    </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
-// FIREBASE CONFIG (Ili kuchukua orodha ya kazi ulizopost)
 const firebaseConfig = {
   apiKey: "AIzaSyA5TJQ-nA9TuLsJJ9PXkYv9c0m7Q9_Dw64",
   authDomain: "bionex-job-portal-d9916.firebaseapp.com",
@@ -124,31 +121,59 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const SHEETDB_URL = "https://sheetdb.io/api/v1/2x8hezimvlj00";
 
-// 1. CHUKUA KAZI KUTOKA FIREBASE NA WEKA KWENYE DROPDOWN
-async function loadJobs() {
-    const dropdown = document.getElementById("jobDropdown");
+// 1. LOAD JOBS FROM FIREBASE
+async function loadJobsPortal() {
+    const display = document.getElementById("displayJobs");
     try {
         const snap = await getDocs(collection(db, "jobs"));
-        dropdown.innerHTML = '<option value="">-- Select a Position --</option>';
+        display.innerHTML = "";
         snap.forEach(doc => {
             const job = doc.data();
-            dropdown.innerHTML += `<option value="${job.title}">${job.title}</option>`;
+            display.innerHTML += `
+                <div class="job-card" onclick="openApplyForm('${job.title}', '${job.questions || ''}')">
+                    <div>
+                        <strong style="font-size: 1.1rem; color: var(--primary);">${job.title}</strong><br>
+                        <small style="color: #666;">Bionex Co. Ltd</small>
+                    </div>
+                    <span class="btn-view">Apply Now</span>
+                </div>
+            `;
         });
-    } catch (e) {
-        dropdown.innerHTML = '<option value="">Error loading jobs</option>';
-    }
+    } catch (e) { display.innerHTML = "Unable to load jobs."; }
 }
 
-// 2. TUMA DATA KWENYE SHEETDB (GOOGLE SHEETS)
-const form = document.getElementById('applicantForm');
+// 2. OPEN FORM WITH DYNAMIC QUESTIONS
+window.openApplyForm = function(title, questions) {
+    document.getElementById("jobListSection").style.display = "none";
+    document.getElementById("applyFormSection").style.display = "block";
+    
+    document.getElementById("selectedJobTitle").innerText = title;
+    document.getElementById("hiddenJobTitle").value = title;
+    
+    const dynArea = document.getElementById("dynamicQuestions");
+    dynArea.innerHTML = ""; // Clear old questions
+
+    if(questions) {
+        // Hapa tunabadilisha "questions" zilizopostiwa kuwa input fields
+        dynArea.innerHTML = `<label>Additional Information (Job Requirements)</label>
+                             <textarea name="Maelezo_Zaidi" rows="4" readonly>${questions}</textarea>
+                             <label>Why are you the best fit for this role?</label>
+                             <textarea name="Applicant_Reason" placeholder="Briefly answer based on requirements..."></textarea>`;
+    }
+};
+
+window.showJobs = function() {
+    document.getElementById("jobListSection").style.display = "block";
+    document.getElementById("applyFormSection").style.display = "none";
+};
+
+// 3. SUBMIT TO SHEETDB
+const form = document.getElementById('mainApplicationForm');
 form.addEventListener("submit", e => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
-    const msg = document.getElementById("msg");
-
     btn.disabled = true;
-    btn.innerText = "Submitting Data...";
-    msg.innerHTML = "Processing your application...";
+    btn.innerText = "Synchronizing Data...";
 
     fetch(SHEETDB_URL, {
         method: "POST",
@@ -156,23 +181,18 @@ form.addEventListener("submit", e => {
     })
     .then(res => res.json())
     .then(data => {
-        msg.style.color = "green";
-        msg.innerHTML = "✅ Application Sent Successfully! Wait for our email.";
-        form.reset();
-        btn.disabled = false;
-        btn.innerText = "SUBMIT APPLICATION";
+        document.getElementById("responseMsg").innerHTML = "✅ Application Successful! Eng. Allan's team will review your profile.";
+        document.getElementById("responseMsg").style.color = "green";
+        setTimeout(() => location.reload(), 3000);
     })
     .catch(err => {
-        msg.style.color = "red";
-        msg.innerHTML = "❌ Error submitting. Try again.";
         btn.disabled = false;
         btn.innerText = "SUBMIT APPLICATION";
+        alert("Error connecting to Bionex Servers.");
     });
 });
 
-// START
-loadJobs();
+loadJobsPortal();
 </script>
-
 </body>
 </html>
