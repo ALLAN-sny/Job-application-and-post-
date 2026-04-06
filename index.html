@@ -2,34 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bionex Careers</title>
+    <title>Bionex Careers | Portal</title>
     <style>
-        body { font-family: sans-serif; background: #eee; margin: 0; }
-        .h { background: #0a192f; color: #ffca28; padding: 30px; text-align: center; }
-        .c { max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 10px; }
-        .j { border-left: 5px solid #ffca28; padding: 15px; margin-bottom: 10px; cursor: pointer; background: #fafafa; display: flex; justify-content: space-between; }
+        :root { --navy: #0a192f; --gold: #ffca28; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+        .hero { background: var(--navy); color: white; padding: 40px; text-align: center; border-bottom: 5px solid var(--gold); }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; }
+        .job-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; border-left: 6px solid var(--gold); cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .job-card:hover { transform: scale(1.02); }
         .hidden { display: none; }
-        input, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; box-sizing: border-box; }
-        .btn { background: #0a192f; color: #ffca28; padding: 15px; width: 100%; border: none; cursor: pointer; }
+        .form-box { background: white; padding: 30px; border-radius: 15px; }
+        input, textarea { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-submit { background: var(--navy); color: var(--gold); border: none; padding: 18px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 25px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="h"><h1>BIONEX CAREERS</h1></div>
+<div class="hero">
+    <h1 style="margin:0;">BIONEX CAREERS</h1>
+    <p>Engineering Your Future | CEO: Eng. Allan</p>
+</div>
 
-<div class="c">
-    <div id="list">Loading...</div>
+<div class="container">
+    <div id="listView">
+        <h3 style="text-align:center; color: #666;" id="statusMsg">Checking for vacancies...</h3>
+        <div id="jobList"></div>
+    </div>
 
-    <div id="form" class="hidden">
-        <button onclick="location.reload()">← Back</button>
-        <h2 id="jt"></h2>
-        <form id="aForm">
-            <input type="hidden" name="POSITION" id="hp">
-            <label>NAME</label><input type="text" name="NAME" required>
-            <label>EMAIL ADRESS</label><input type="email" name="EMAIL ADRESS" required>
-            <label>PHONE NO:</label><input type="tel" name="PHONE NO:" required>
-            <div id="qs"></div>
-            <button type="submit" class="btn" id="sb">SUBMIT APPLICATION</button>
+    <div id="formView" class="hidden form-box">
+        <button onclick="location.reload()" style="cursor:pointer; background:none; border:none; color:var(--navy); font-weight:bold;">← BACK TO LIST</button>
+        <h2 id="jobTitleDisplay" style="color:var(--navy); margin-top:15px;"></h2>
+        <form id="appForm">
+            <input type="hidden" id="posField">
+            <label>FULL NAME</label><input type="text" id="uName" required>
+            <label>EMAIL ADRESS</label><input type="email" id="uEmail" required>
+            <label>PHONE NO:</label><input type="tel" id="uPhone" required>
+            <div id="dynamicQs"></div>
+            <button type="submit" id="sBtn" class="btn-submit">SUBMIT APPLICATION</button>
         </form>
     </div>
 </div>
@@ -37,42 +46,71 @@
 <script>
     const API = "https://sheetdb.io/api/v1/2x8hezimvlj00";
 
-    // Load Jobs
-    fetch(API).then(res => res.json()).then(data => {
-        const jobs = data.filter(r => r.TITLE);
-        const div = document.getElementById("list");
+    // 1. KUSOMA KAZI KUTOKA KWENYE SHEET (Na Cache Buster)
+    fetch(API + "?v=" + new Date().getTime()) 
+    .then(res => res.json())
+    .then(data => {
+        // Tunatafuta rows ambazo zina TITLE (maana yake ni Kazi zilizopostiwa)
+        const jobs = data.filter(row => row.TITLE && row.TITLE.trim() !== "" && !row.NAME);
+        const listDiv = document.getElementById("jobList");
+        const status = document.getElementById("statusMsg");
+
         if(jobs.length > 0) {
-            div.innerHTML = jobs.map(j => `
-                <div class="j" onclick="show('${j.TITLE}','${j.QUESTIONS}','${j.REQUIRECV}')">
-                    <b>${j.TITLE}</b> <span>Apply →</span>
+            status.style.display = "none";
+            listDiv.innerHTML = jobs.map(j => `
+                <div class="job-card" onclick="openForm('${j.TITLE}','${j.QUESTIONS}','${j.REQUIRECV}')">
+                    <div style="font-weight:bold; font-size:1.1rem; color:var(--navy);">${j.TITLE}</div>
+                    <div style="font-weight:bold; color:var(--navy);">Apply →</div>
                 </div>
             `).join('');
-        } else { div.innerHTML = "No vacancies."; }
+        } else {
+            status.innerText = "No vacancies at the moment. Please check back later.";
+        }
     });
 
-    function show(t, q, cv) {
-        document.getElementById("list").classList.add("hidden");
-        document.getElementById("form").classList.remove("hidden");
-        document.getElementById("jt").innerText = t;
-        document.getElementById("hp").value = t;
-        const qDiv = document.getElementById("qs");
-        qDiv.innerHTML = "";
-        if(q && q !== "undefined") {
-            q.split(",").forEach((item, i) => {
-                qDiv.innerHTML += `<label>${item}</label><textarea name="ANS_${i}" required></textarea>`;
+    // 2. KUFUNGUA FORM YA KAZI HUSIKA
+    function openForm(title, qs, cv) {
+        document.getElementById("listView").classList.add("hidden");
+        document.getElementById("formView").classList.remove("hidden");
+        document.getElementById("jobTitleDisplay").innerText = title;
+        document.getElementById("posField").value = title;
+        
+        const qArea = document.getElementById("dynamicQs");
+        qArea.innerHTML = "";
+        
+        if(qs && qs !== "undefined" && qs.trim() !== "") {
+            qs.split(",").forEach((q, i) => {
+                qArea.innerHTML += `<label>${q.trim()}</label><textarea id="ans${i}" required></textarea>`;
             });
+        }
+        
+        if(cv === "Yes") {
+            qArea.innerHTML += `<label>CV LINK (Google Drive)</label><input type="url" id="cvL" required>`;
         }
     }
 
-    // Submit Application
-    document.getElementById("aForm").addEventListener("submit", function(e) {
+    // 3. KUTUMA MAOMBI (SUBMIT)
+    document.getElementById("appForm").addEventListener("submit", function(e) {
         e.preventDefault();
-        document.getElementById("sb").innerText = "Sending...";
+        const b = document.getElementById("sBtn");
+        b.innerText = "Transmitting...";
+        b.disabled = true;
+
+        const application = {
+            "data": [{
+                "NAME": document.getElementById("uName").value,
+                "EMAIL ADRESS": document.getElementById("uEmail").value,
+                "PHONE NO:": document.getElementById("uPhone").value,
+                "POSITION": document.getElementById("posField").value
+            }]
+        };
+
         fetch(API, {
             method: 'POST',
-            body: new FormData(this)
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(application)
         }).then(() => {
-            alert("Application Sent!");
+            alert("Application Sent Successfully! Eng. Allan will review it.");
             location.reload();
         });
     });
