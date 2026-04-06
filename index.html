@@ -3,56 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionex Careers | Portal</title>
+    <title>Bionex Careers | Apply Now</title>
     <style>
         :root { --navy: #0a192f; --gold: #ffca28; --bg: #f4f7f9; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333; }
-        .hero { background: var(--navy); color: white; padding: 60px 20px; text-align: center; border-bottom: 5px solid var(--gold); }
-        .container { max-width: 800px; margin: -30px auto 100px; padding: 0 20px; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
+        .header { background: var(--navy); color: white; padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--gold); }
+        .container { max-width: 700px; margin: -20px auto 80px; padding: 0 20px; }
         .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .job-card { 
-            background: #fff; border: 1px solid #eee; border-left: 5px solid var(--gold); 
-            padding: 20px; margin-bottom: 15px; border-radius: 10px; cursor: pointer;
-            display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
-        }
-        .job-card:hover { transform: translateX(10px); background: #fdfdfd; }
-        .form-view { display: none; }
+        .job-box { background: #fff; border: 1px solid #eee; border-left: 5px solid var(--gold); padding: 20px; margin-bottom: 15px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .hidden { display: none; }
         label { display: block; margin-top: 20px; font-weight: bold; color: var(--navy); }
-        input, textarea { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-submit { background: var(--navy); color: var(--gold); border: none; width: 100%; padding: 18px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        input, textarea { width: 100%; padding: 14px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        .btn-send { background: var(--navy); color: var(--gold); border: none; width: 100%; padding: 20px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 30px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-<div class="hero">
+<div class="header">
     <h1 style="letter-spacing: 3px; margin: 0;">BIONEX COMPANY LIMITED</h1>
     <p>Founder & CEO: <strong>Eng. Allan</strong></p>
 </div>
 
 <div class="container">
     <div id="listView" class="card">
-        <h2 style="text-align: center; color: var(--navy);">Available Vacancies</h2>
-        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 30px;">
-        <div id="jobContainer">Loading vacancies...</div>
+        <h2 style="text-align: center; color: var(--navy); margin-bottom: 25px;">Available Positions</h2>
+        <div id="jobList">Loading vacancies...</div>
     </div>
 
-    <div id="formView" class="card form-view">
-        <div onclick="location.reload()" style="cursor:pointer; color:var(--navy); font-weight:bold; margin-bottom: 20px;">← Back to Vacancies</div>
-        <h2 id="displayTitle" style="color:var(--navy); margin:0;"></h2>
-        <p id="displayDesc" style="color:#666;"></p>
-        <hr>
+    <div id="formView" class="card hidden">
+        <div onclick="location.reload()" style="cursor:pointer; font-weight:bold; color:var(--navy); margin-bottom:20px;">← Back</div>
+        <h2 id="jobT" style="margin:0; color:var(--navy);"></h2>
+        <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+        
         <form id="applyForm">
-            <input type="hidden" name="NAFASI" id="hNafasi">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div><label>Full Name</label><input type="text" name="JINA" required></div>
-                <div><label>Age</label><input type="number" name="AGE" required></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div><label>Email</label><input type="email" name="EMAIL" required></div>
-                <div><label>Phone</label><input type="tel" name="PHONE" required></div>
-            </div>
-            <div id="dynQuestions"></div>
-            <button type="submit" id="sBtn" class="btn-submit">SUBMIT APPLICATION</button>
+            <input type="hidden" name="POSITION" id="hPos">
+            
+            <label>NAME</label>
+            <input type="text" name="NAME" placeholder="Your Full Name" required>
+            
+            <label>EMAIL ADRESS</label>
+            <input type="email" name="EMAIL ADRESS" placeholder="example@email.com" required>
+            
+            <label>PHONE NO:</label>
+            <input type="tel" name="PHONE NO:" placeholder="07XXXXXXXX" required>
+
+            <div id="qArea"></div>
+            
+            <button type="submit" id="sBtn" class="btn-send">SUBMIT APPLICATION</button>
         </form>
     </div>
 </div>
@@ -60,41 +57,40 @@
 <script>
     const API_URL = "https://sheetdb.io/api/v1/2x8hezimvlj00";
 
-    // 1. Fetch Jobs
+    // Load Jobs
     fetch(API_URL).then(res => res.json()).then(data => {
         const jobs = data.filter(r => r.TITLE);
-        const container = document.getElementById("jobContainer");
-        container.innerHTML = jobs.length ? jobs.map(j => `
-            <div class="job-card" onclick="openForm('${j.TITLE}', '${j.QUESTIONS}', '${j.ATTACHMENTREQUIRED}', '${j.DESCRIPTION || ''}')">
+        const list = document.getElementById("jobList");
+        list.innerHTML = jobs.length ? jobs.map(j => `
+            <div class="job-box" onclick="showForm('${j.TITLE}', '${j.QUESTIONS}', '${j.REQUIRECV}')">
                 <strong>${j.TITLE}</strong>
                 <span style="color:var(--navy); font-weight:bold;">Apply →</span>
             </div>
-        `).join('') : "No jobs posted yet.";
+        `).join('') : "No vacancies available.";
     });
 
-    // 2. Open Form
-    function openForm(title, questions, attach, desc) {
-        document.getElementById("listView").style.display = "none";
-        document.getElementById("formView").style.display = "block";
-        document.getElementById("displayTitle").innerText = title;
-        document.getElementById("displayDesc").innerText = desc;
-        document.getElementById("hNafasi").value = title;
+    // Show Form
+    function showForm(title, questions, cv) {
+        document.getElementById("listView").classList.add("hidden");
+        document.getElementById("formView").classList.remove("hidden");
+        document.getElementById("jobT").innerText = title;
+        document.getElementById("hPos").value = title;
+
+        const qa = document.getElementById("qArea");
+        qa.innerHTML = "";
         
-        const qArea = document.getElementById("dynQuestions");
-        qArea.innerHTML = "";
-        
-        if(questions && questions !== "undefined") {
+        if(questions && questions !== "undefined" && questions !== "") {
             questions.split(",").forEach((q, i) => {
-                qArea.innerHTML += `<label>${q.trim()}</label><textarea name="ANSWER_${i+1}" required></textarea>`;
+                qa.innerHTML += `<label>QUESTION: ${q.trim()}</label><textarea name="ANS_${i+1}" required></textarea>`;
             });
         }
-        
-        if(attach === "Yes") {
-            qArea.innerHTML += `<label>CV Link (Google Drive)</label><input type="url" name="CV_LINK" required>`;
+
+        if(cv === "Yes") {
+            qa.innerHTML += `<label>GOOGLE DRIVE CV LINK</label><input type="url" name="CV_LINK" required>`;
         }
     }
 
-    // 3. Submit
+    // Submit Application
     document.getElementById("applyForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         document.getElementById("sBtn").innerText = "Transmitting...";
