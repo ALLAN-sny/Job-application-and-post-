@@ -6,77 +6,196 @@
     <title>Bionex Careers Portal | Eng. Allan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0a192f; --accent: #ffca28; --white: #ffffff; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--primary); color: var(--white); margin: 0; padding: 0; }
-        .header { background: rgba(255,255,255,0.05); padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--accent); }
-        .header h1 { margin: 0; font-size: 2.2rem; color: var(--accent); letter-spacing: 2px; }
-        .container { max-width: 600px; margin: 30px auto; padding: 0 15px; }
-        .job-card { background: white; color: #333; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 10px solid var(--accent); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .job-title { margin: 0; font-size: 1.2rem; color: var(--primary); font-weight: 600; }
-        .badge { font-size: 0.7rem; padding: 4px 8px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-left: 10px; }
-        .badge-pro { background: #007bff; color: white; }
-        .badge-mtaa { background: #28a745; color: white; }
-        .job-meta { font-size: 0.8rem; color: #666; margin: 8px 0; }
-        .job-desc { font-size: 0.85rem; line-height: 1.5; margin-bottom: 15px; }
-        .apply-btn { display: block; background: var(--primary); color: var(--accent); text-align: center; padding: 12px; text-decoration: none; border-radius: 8px; font-weight: bold; }
-        footer { text-align: center; padding: 20px; font-size: 0.75rem; opacity: 0.6; }
+        :root {
+            --primary: #0a192f;
+            --accent: #ffca28;
+            --white: #ffffff;
+            --mtaa: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header ya Kisasa */
+        .header {
+            background: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.9)), 
+                        url('https://www.transparenttextures.com/patterns/cubes.png');
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.3rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        /* Job Cards */
+        .job-card {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border-left: 10px solid var(--accent);
+            transition: transform 0.2s ease;
+        }
+
+        .job-card:active {
+            transform: scale(0.97);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .job-title {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-pro { background: #007bff; }
+        .badge-mtaa { background: var(--mtaa); }
+
+        .job-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .job-desc {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        /* Button ya Maombi */
+        .apply-btn {
+            display: block;
+            background: var(--primary);
+            color: var(--accent);
+            text-align: center;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 2px solid var(--primary);
+            transition: 0.3s;
+        }
+
+        .apply-btn:hover {
+            background: #1a2a44;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>BIONEX CAREERS</h1>
-        <p>Innovation & Community Service</p>
+        <p>Innovation in Biomedical Engineering & Community Services</p>
         <p><small>CEO: Eng. Allan (MUHAS)</small></p>
     </div>
 
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 20px;">Nafasi za Kazi</h2>
+        <h2 class="section-title">Nafasi za Kazi Zilizopo (Mchanganyiko)</h2>
 
         <div class="job-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="job-header">
                 <h3 class="job-title">Biomedical Engineer I</h3>
-                <span class="badge badge-pro">PRO</span>
+                <span class="badge badge-pro">PROFESSIONAL</span>
             </div>
             <div class="job-meta">📍 MUHAS Campus | 🕒 Full-time</div>
-            <p class="job-desc">Kusimamia matengenezo ya vifaa tiba (Ventilators, CPAP, MRI) katika vituo vyetu.</p>
-            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">OMBA KAZI HII</a>
+            <p class="job-desc">Kusimamia matengenezo, calibration, na usalama wa vifaa tiba katika vituo vya Bionex.</p>
+            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">APPLY NOW</a>
         </div>
 
-        <div class="job-card" style="border-left-color: #28a745;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="job-card" style="border-left-color: var(--mtaa);">
+            <div class="job-header">
                 <h3 class="job-title">Community Delivery Rider</h3>
                 <span class="badge badge-mtaa">MTAANI</span>
             </div>
             <div class="job-meta">📍 Dar es Salaam | 🕒 Contract</div>
-            <p class="job-desc">Usambazaji wa haraka wa vifaa vya huduma ya kwanza na dawa mitaani kwa pikipiki.</p>
-            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">OMBA KAZI HII</a>
+            <p class="job-desc">Usambazaji wa vifaa vya huduma ya kwanza na dawa ndogo kwa wateja wetu mitaani.</p>
+            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">APPLY NOW</a>
         </div>
 
         <div class="job-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="job-header">
                 <h3 class="job-title">Medical Lab Assistant</h3>
-                <span class="badge badge-pro">PRO</span>
+                <span class="badge badge-pro">PROFESSIONAL</span>
             </div>
-            <div class="job-meta">📍 Bionex Lab | 🕒 Full-time</div>
-            <p class="job-desc">Kusaidia wataalamu wa maabara katika uchunguzi wa sampuli kwa teknolojia ya kisasa.</p>
-            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">OMBA KAZI HII</a>
+            <div class="job-meta">📍 Bionex Lab Center | 🕒 Full-time</div>
+            <p class="job-desc">Kusaidia uchunguzi wa sampuli kwa kutumia teknolojia ya kisasa ya Bionex Labs.</p>
+            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">APPLY NOW</a>
         </div>
 
-        <div class="job-card" style="border-left-color: #28a745;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="job-card" style="border-left-color: var(--mtaa);">
+            <div class="job-header">
                 <h3 class="job-title">Sales & Outreach Agent</h3>
                 <span class="badge badge-mtaa">MTAANI</span>
             </div>
             <div class="job-meta">📍 All Regions | 🕒 Commission</div>
-            <p class="job-desc">Kutoa elimu ya afya na kutangaza huduma za Bionex kwa wananchi majumbani.</p>
-            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">OMBA KAZI HII</a>
+            <p class="job-desc">Kutoa elimu ya afya na kutangaza huduma za Bionex kwa wananchi majumbani kwao.</p>
+            <a href="https://forms.gle/82N8gxd2zx6iePBu6" class="apply-btn">APPLY NOW</a>
         </div>
 
     </div>
 
     <footer>
-        <p>© 2026 Bionex Company Ltd.<br>Developed by Eng. Allan | Biomedical Engineering</p>
+        <p>© 2026 Bionex Company Ltd. All Rights Reserved.<br>
+        Developed by <strong>Eng. Allan</strong> | Biomedical Engineering Dept.</p>
     </footer>
 
 </body>
