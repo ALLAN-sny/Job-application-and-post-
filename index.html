@@ -6,87 +6,50 @@
     <title>Bionex Careers</title>
     <style>
         body { font-family: sans-serif; background: #f0f2f5; margin: 0; }
-        .hero { background: #0a192f; color: #ffca28; padding: 30px; text-align: center; }
-        .container { max-width: 500px; margin: 20px auto; padding: 15px; }
-        .job-card { background: white; padding: 20px; border-radius: 12px; border-left: 6px solid #ffca28; margin-bottom: 15px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .hero { background: #0a192f; color: #ffca28; padding: 20px; text-align: center; }
+        .container { max-width: 400px; margin: 20px auto; padding: 10px; }
+        .job-card { background: white; padding: 15px; border-radius: 10px; border-left: 5px solid #ffca28; margin-bottom: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hidden { display: none; }
-        input, textarea { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { background: #0a192f; color: #ffca28; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        input { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn { background: #0a192f; color: #ffca28; padding: 15px; width: 100%; border: none; border-radius: 5px; font-weight: bold; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="hero">
-    <h1>BIONEX CAREERS</h1>
-    <p>Engineering Your Future</p>
-</div>
-
+<div class="hero"><h1>BIONEX CAREERS</h1></div>
 <div class="container">
     <div id="listView">
-        <h3 id="loading">Searching for jobs...</h3>
+        <h3 id="load">Checking jobs...</h3>
         <div id="jobList"></div>
     </div>
-
     <div id="formView" class="hidden">
         <button onclick="location.reload()">← BACK</button>
-        <h2 id="displayTitle"></h2>
+        <h2 id="jobT"></h2>
         <form action="https://sheetdb.io/api/v1/2x8hezimvlj00" method="POST">
-            <input type="hidden" name="data[POSITION]" id="posField">
-            <input type="hidden" name="data[ID]" value="APP">
-            
-            <label>Full Name</label>
-            <input type="text" name="data[NAME]" required>
-            
-            <label>Email Address</label>
-            <input type="email" name="data[EMAIL ADRESS]" required>
-            
-            <label>Phone Number</label>
-            <input type="text" name="data[PHONE NO:]" required>
-
-            <div id="dynamicQs"></div>
-
+            <input type="hidden" name="POSITION" id="pField">
+            <label>Name</label><input type="text" name="NAME" required>
+            <label>Email</label><input type="email" name="EMAIL" required>
+            <label>Phone</label><input type="text" name="PHONE" required>
             <button type="submit" class="btn">SUBMIT APPLICATION</button>
         </form>
     </div>
 </div>
-
 <script>
-    const API = "https://sheetdb.io/api/v1/2x8hezimvlj00";
-
-    // Soma kazi kutoka Sheet
-    fetch(API)
+    fetch("https://sheetdb.io/api/v1/2x8hezimvlj00")
     .then(res => res.json())
     .then(data => {
-        // Tunachuja mistari yenye TITLE lakini haina NAME (hizo ndio kazi)
-        const jobs = data.filter(row => row.TITLE && row.TITLE.trim() !== "" && (!row.NAME || row.NAME === ""));
-        const listDiv = document.getElementById("jobList");
-        document.getElementById("loading").classList.add("hidden");
-
-        if(jobs.length > 0) {
-            listDiv.innerHTML = jobs.map(j => `
-                <div class="job-card" onclick="openForm('${j.TITLE}', '${j.QUESTIONS}')">
-                    <strong>${j.TITLE}</strong><br>
-                    <small>Tap to Apply →</small>
-                </div>
-            `).join('');
-        } else {
-            document.getElementById("loading").innerText = "No jobs available yet.";
-        }
+        document.getElementById("load").style.display = "none";
+        const jobs = data.filter(r => r.TITLE && !r.NAME);
+        document.getElementById("jobList").innerHTML = jobs.map(j => `
+            <div class="job-card" onclick="openF('${j.TITLE}')">
+                <strong>${j.TITLE}</strong><br><small>Apply Now →</small>
+            </div>
+        `).join('');
     });
-
-    function openForm(title, qs) {
+    function openF(t) {
         document.getElementById("listView").classList.add("hidden");
         document.getElementById("formView").classList.remove("hidden");
-        document.getElementById("displayTitle").innerText = title;
-        document.getElementById("posField").value = title;
-        
-        const qDiv = document.getElementById("dynamicQs");
-        if(qs && qs !== "undefined") {
-            // Hiis itatengeneza maswali kulingana na ulichoandika Admin
-            qs.split(",").forEach(q => {
-                qDiv.innerHTML += `<label>${q.trim()}</label><textarea name="data[QUESTIONS]"></textarea>`;
-            });
-        }
+        document.getElementById("jobT").innerText = t;
+        document.getElementById("pField").value = t;
     }
 </script>
 </body>
